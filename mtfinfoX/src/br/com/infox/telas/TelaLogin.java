@@ -25,9 +25,11 @@ public class TelaLogin extends javax.swing.JFrame {
         //a linha abaixo serve de apoio ao status da conexão
         //System.out.println(conexao);
         if(conexao != null){
-            lblStatus.setText("Conectado!");    
+            //Set image dbok;
+            lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/dbok.png")));
         }else{
-            lblStatus.setText("Não conectado!");
+            //Set image dberror
+            lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/dberror.png")));
         }
     }
 
@@ -57,7 +59,7 @@ public class TelaLogin extends javax.swing.JFrame {
 
         btnLogin.setText("Login");
 
-        lblStatus.setText("Status");
+        lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/dberror.png"))); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -91,11 +93,11 @@ public class TelaLogin extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblSenha)
                     .addComponent(pwdSenha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btnLogin)
                     .addComponent(lblStatus))
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
 
         pack();
