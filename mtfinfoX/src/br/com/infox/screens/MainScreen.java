@@ -4,6 +4,11 @@
  */
 package br.com.infox.screens;
 
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Locale;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author marlon
@@ -46,6 +51,11 @@ public class MainScreen extends javax.swing.JFrame {
         setTitle("Sistema para controle de OS");
         setPreferredSize(new java.awt.Dimension(915, 523));
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowActivated(java.awt.event.WindowEvent evt) {
+                formWindowActivated(evt);
+            }
+        });
 
         javax.swing.GroupLayout jdpPanelLayout = new javax.swing.GroupLayout(jdpPanel);
         jdpPanel.setLayout(jdpPanelLayout);
@@ -112,6 +122,11 @@ public class MainScreen extends javax.swing.JFrame {
 
         menOpcSai.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_DOWN_MASK));
         menOpcSai.setText("Sair");
+        menOpcSai.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menOpcSaiActionPerformed(evt);
+            }
+        });
         menOpc.add(menOpcSai);
 
         Menu.add(menOpc);
@@ -127,14 +142,10 @@ public class MainScreen extends javax.swing.JFrame {
                 .addComponent(jdpPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblLogo)
-                        .addContainerGap(18, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblUsuario)
-                            .addComponent(lblData))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addComponent(lblLogo)
+                    .addComponent(lblUsuario)
+                    .addComponent(lblData))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -161,8 +172,25 @@ public class MainScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_menRelServActionPerformed
 
     private void menAjuSobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menAjuSobActionPerformed
-        // TODO add your handling code here:
+        // Chamando a tela sobre
+        new AboutScreen().setVisible(true);
     }//GEN-LAST:event_menAjuSobActionPerformed
+
+    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
+        // As linhas abaixo substituem a label Data pela data atual do sistema
+        Date data = new Date();
+        DateFormat formatador = DateFormat.getDateInstance(DateFormat.SHORT);
+        lblData.setText(formatador.format(data));
+    }//GEN-LAST:event_formWindowActivated
+
+    private void menOpcSaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menOpcSaiActionPerformed
+        // Exibir uma caixa de diálogo ao sair
+        int sair = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja sair?","Atenção",JOptionPane.YES_NO_OPTION);
+        if (sair == JOptionPane.YES_OPTION){
+        System.exit(0);
+}
+
+    }//GEN-LAST:event_menOpcSaiActionPerformed
 
     /**
      * @param args the command line arguments

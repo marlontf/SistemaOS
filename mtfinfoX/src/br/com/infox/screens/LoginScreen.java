@@ -81,12 +81,16 @@ public class LoginScreen extends javax.swing.JFrame {
 
         lblSenha.setText("Senha");
 
+        txtUsuario.setText("admin");
+
         btnLogin.setText("Login");
         btnLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLoginActionPerformed(evt);
             }
         });
+
+        txtSenha.setText("admin");
 
         lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/dberror.png"))); // NOI18N
 
