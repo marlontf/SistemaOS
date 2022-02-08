@@ -88,11 +88,13 @@ public class MainScreen extends javax.swing.JFrame {
 
         menCadUsu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.ALT_DOWN_MASK));
         menCadUsu.setText("Usuários");
+        menCadUsu.setEnabled(false);
         menCad.add(menCadUsu);
 
         Menu.add(menCad);
 
         menRel.setText("Relatório");
+        menRel.setEnabled(false);
 
         menRelServ.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_DOWN_MASK));
         menRelServ.setText("Serviços");
@@ -238,10 +240,10 @@ public class MainScreen extends javax.swing.JFrame {
     private javax.swing.JMenu menCad;
     private javax.swing.JMenuItem menCadCli;
     private javax.swing.JMenuItem menCadOS;
-    private javax.swing.JMenuItem menCadUsu;
+    public static javax.swing.JMenuItem menCadUsu;
     private javax.swing.JMenu menOpc;
     private javax.swing.JMenuItem menOpcSai;
-    private javax.swing.JMenu menRel;
+    public static javax.swing.JMenu menRel;
     private javax.swing.JMenuItem menRelServ;
     // End of variables declaration//GEN-END:variables
 }
