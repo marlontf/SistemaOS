@@ -3,8 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package br.com.infox.screens;
+
 import br.com.infox.dal.ConnectionModule;
 import java.sql.*;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -16,6 +18,26 @@ public class LoginScreen extends javax.swing.JFrame {
     PreparedStatement pst = null;
     ResultSet rs = null;
 
+    public void login() {
+        String sql = "select * from tbusuarios where login=? and senha=?";
+        try {
+            pst = conexao.prepareStatement(sql);
+            //Capturando variáveis do formulário
+            pst.setString(1, txtUsuario.getText());
+            pst.setString(2, new String(txtSenha.getPassword()));
+            //Executando a query();
+            rs = pst.executeQuery();
+            //se existir usuário e senha
+            if (rs.next()) {
+                new MainScreen().setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Usuário e/ou senha inválido(s)");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e);
+        }
+    }
+
     /**
      * Creates new form TelaLogin
      */
@@ -24,10 +46,10 @@ public class LoginScreen extends javax.swing.JFrame {
         conexao = ConnectionModule.conector();
         //a linha abaixo serve de apoio ao status da conexão
         //System.out.println(conexao);
-        if(conexao != null){
+        if (conexao != null) {
             //Set image dbok;
             lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/dbok.png")));
-        }else{
+        } else {
             //Set image dberror
             lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/dberror.png")));
         }
@@ -44,9 +66,9 @@ public class LoginScreen extends javax.swing.JFrame {
 
         lblUsuario = new javax.swing.JLabel();
         lblSenha = new javax.swing.JLabel();
-        txtLogin = new javax.swing.JTextField();
+        txtUsuario = new javax.swing.JTextField();
         btnLogin = new javax.swing.JButton();
-        pwdSenha = new javax.swing.JPasswordField();
+        txtSenha = new javax.swing.JPasswordField();
         lblStatus = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -58,6 +80,11 @@ public class LoginScreen extends javax.swing.JFrame {
         lblSenha.setText("Senha");
 
         btnLogin.setText("Login");
+        btnLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLoginActionPerformed(evt);
+            }
+        });
 
         lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/dberror.png"))); // NOI18N
 
@@ -78,8 +105,8 @@ public class LoginScreen extends javax.swing.JFrame {
                             .addComponent(lblSenha))
                         .addGap(12, 12, 12)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtLogin)
-                            .addComponent(pwdSenha, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(txtUsuario)
+                            .addComponent(txtSenha, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(25, 25, 25))
         );
         layout.setVerticalGroup(
@@ -88,11 +115,11 @@ public class LoginScreen extends javax.swing.JFrame {
                 .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblUsuario)
-                    .addComponent(txtLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblSenha)
-                    .addComponent(pwdSenha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtSenha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btnLogin)
@@ -103,6 +130,11 @@ public class LoginScreen extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+        //chamando o método login()
+        login();
+    }//GEN-LAST:event_btnLoginActionPerformed
 
     /**
      * @param args the command line arguments
@@ -145,7 +177,7 @@ public class LoginScreen extends javax.swing.JFrame {
     private javax.swing.JLabel lblSenha;
     private javax.swing.JLabel lblStatus;
     private javax.swing.JLabel lblUsuario;
-    private javax.swing.JPasswordField pwdSenha;
-    private javax.swing.JTextField txtLogin;
+    private javax.swing.JPasswordField txtSenha;
+    private javax.swing.JTextField txtUsuario;
     // End of variables declaration//GEN-END:variables
 }
