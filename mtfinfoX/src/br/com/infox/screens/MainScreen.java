@@ -26,21 +26,143 @@ public class MainScreen extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jdpPanel = new javax.swing.JDesktopPane();
+        lblLogo = new javax.swing.JLabel();
+        lblUsuario = new javax.swing.JLabel();
+        lblData = new javax.swing.JLabel();
+        Menu = new javax.swing.JMenuBar();
+        menCad = new javax.swing.JMenu();
+        menCadCli = new javax.swing.JMenuItem();
+        menCadOS = new javax.swing.JMenuItem();
+        menCadUsu = new javax.swing.JMenuItem();
+        menRel = new javax.swing.JMenu();
+        menRelServ = new javax.swing.JMenuItem();
+        menAju = new javax.swing.JMenu();
+        menAjuSob = new javax.swing.JMenuItem();
+        menOpc = new javax.swing.JMenu();
+        menOpcSai = new javax.swing.JMenuItem();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Sistema para controle de OS");
+        setPreferredSize(new java.awt.Dimension(915, 523));
+        setResizable(false);
+
+        javax.swing.GroupLayout jdpPanelLayout = new javax.swing.GroupLayout(jdpPanel);
+        jdpPanel.setLayout(jdpPanelLayout);
+        jdpPanelLayout.setHorizontalGroup(
+            jdpPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 640, Short.MAX_VALUE)
+        );
+        jdpPanelLayout.setVerticalGroup(
+            jdpPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/x.png"))); // NOI18N
+
+        lblUsuario.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblUsuario.setText("Usuário");
+
+        lblData.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblData.setText("Data");
+
+        menCad.setText("Cadastro");
+
+        menCadCli.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.ALT_DOWN_MASK));
+        menCadCli.setText("Cliente");
+        menCad.add(menCadCli);
+
+        menCadOS.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.ALT_DOWN_MASK));
+        menCadOS.setText("OS");
+        menCad.add(menCadOS);
+
+        menCadUsu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.ALT_DOWN_MASK));
+        menCadUsu.setText("Usuários");
+        menCad.add(menCadUsu);
+
+        Menu.add(menCad);
+
+        menRel.setText("Relatório");
+
+        menRelServ.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_DOWN_MASK));
+        menRelServ.setText("Serviços");
+        menRelServ.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menRelServActionPerformed(evt);
+            }
+        });
+        menRel.add(menRelServ);
+
+        Menu.add(menRel);
+
+        menAju.setText("Ajuda");
+
+        menAjuSob.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
+        menAjuSob.setText("Sobre");
+        menAjuSob.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menAjuSobActionPerformed(evt);
+            }
+        });
+        menAju.add(menAjuSob);
+
+        Menu.add(menAju);
+
+        menOpc.setText("Opções");
+
+        menOpcSai.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_DOWN_MASK));
+        menOpcSai.setText("Sair");
+        menOpc.add(menOpcSai);
+
+        Menu.add(menOpc);
+
+        setJMenuBar(Menu);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jdpPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblLogo)
+                        .addContainerGap(18, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblUsuario)
+                            .addComponent(lblData))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jdpPanel)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblUsuario)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblData)
+                        .addGap(112, 112, 112)
+                        .addComponent(lblLogo)
+                        .addGap(0, 131, Short.MAX_VALUE)))
+                .addContainerGap())
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void menRelServActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menRelServActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_menRelServActionPerformed
+
+    private void menAjuSobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menAjuSobActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_menAjuSobActionPerformed
 
     /**
      * @param args the command line arguments
@@ -78,5 +200,20 @@ public class MainScreen extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuBar Menu;
+    private javax.swing.JDesktopPane jdpPanel;
+    private javax.swing.JLabel lblData;
+    private javax.swing.JLabel lblLogo;
+    private javax.swing.JLabel lblUsuario;
+    private javax.swing.JMenu menAju;
+    private javax.swing.JMenuItem menAjuSob;
+    private javax.swing.JMenu menCad;
+    private javax.swing.JMenuItem menCadCli;
+    private javax.swing.JMenuItem menCadOS;
+    private javax.swing.JMenuItem menCadUsu;
+    private javax.swing.JMenu menOpc;
+    private javax.swing.JMenuItem menOpcSai;
+    private javax.swing.JMenu menRel;
+    private javax.swing.JMenuItem menRelServ;
     // End of variables declaration//GEN-END:variables
 }

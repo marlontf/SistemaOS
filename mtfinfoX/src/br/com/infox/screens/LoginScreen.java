@@ -30,6 +30,8 @@ public class LoginScreen extends javax.swing.JFrame {
             //se existir usuário e senha
             if (rs.next()) {
                 new MainScreen().setVisible(true);
+                this.dispose();
+                conexao.close();
             } else {
                 JOptionPane.showMessageDialog(this, "Usuário e/ou senha inválido(s)");
             }
