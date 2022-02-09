@@ -97,7 +97,39 @@ public class UserScreen extends javax.swing.JInternalFrame {
         }
     }
     
-   
+   //método para alterar dados do usuário
+    private void alterar(){
+        if(!isEmpty(txtId) && !isEmpty(txtNome) && !isEmpty(txtLogin) && !isEmpty(txtSenha) && cbPerfil.getSelectedIndex() != -1){
+            String sql = "update tbusuarios set usuario=?, fone=?, login=?, senha=?, perfil=? where iduser=?";
+            try {
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtNome.getText());
+                pst.setString(2, txtTelefone.getText());
+                pst.setString(3, txtLogin.getText());
+                pst.setString(4, new String(txtSenha.getPassword()));
+                pst.setString(5, (String) cbPerfil.getSelectedItem());
+                pst.setString(6, txtId.getText());
+                //a linha abaixo insere os dados na tabela de usuários
+                if(pst.executeUpdate() != 0){
+                    txtId.setText(null);
+                    txtId.requestFocus();
+                    txtNome.setText(null);
+                    txtTelefone.setText(null);
+                    txtLogin.setText(null);
+                    txtSenha.setText(null);
+                    cbPerfil.setSelectedIndex(-1);
+                    JOptionPane.showMessageDialog(null, "Dados do usuário alterados com sucesso");
+                }else{
+                    JOptionPane.showMessageDialog(null, "Houve um erro com alteração");
+                }
+            } catch (HeadlessException | SQLException e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        }else{
+           JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios"); 
+        }
+        
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -177,6 +209,11 @@ public class UserScreen extends javax.swing.JInternalFrame {
         btnUpdate.setToolTipText("Alterar");
         btnUpdate.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnUpdate.setPreferredSize(new java.awt.Dimension(80, 80));
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
 
         btnDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/delete.png"))); // NOI18N
         btnDelete.setToolTipText("Remover");
@@ -251,11 +288,11 @@ public class UserScreen extends javax.swing.JInternalFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblSenha)
                             .addComponent(txtSenha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(16, 16, 16)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblPerfil)
                             .addComponent(cbPerfil, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnCreate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnRead, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -281,6 +318,11 @@ public class UserScreen extends javax.swing.JInternalFrame {
         //Setando foco para o campo ID
         txtId.requestFocus();
     }//GEN-LAST:event_formFocusGained
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        //realiza a alteração
+        alterar();
+    }//GEN-LAST:event_btnUpdateActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
