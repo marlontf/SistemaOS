@@ -203,6 +203,7 @@ public class MainScreen extends javax.swing.JFrame {
         UserScreen user = new UserScreen();
         user.setVisible(true);
         desktop.add(user);
+        user.requestFocus();
     }//GEN-LAST:event_menCadUsuActionPerformed
 
     /**

@@ -6,7 +6,9 @@ package br.com.infox.screens;
 
 import java.sql.*;
 import br.com.infox.dal.ConnectionModule;
+import java.awt.HeadlessException;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 /**
  * User Screen
  * @author marlon
@@ -22,6 +24,7 @@ public class UserScreen extends javax.swing.JInternalFrame {
         conexao = ConnectionModule.conector();
     }
     
+    //método para consultar usuário
     private void consultar(){
         String sql = "select * from tbusuarios where iduser = ?";
         
@@ -44,11 +47,57 @@ public class UserScreen extends javax.swing.JInternalFrame {
                 txtSenha.setText(null);
                 cbPerfil.setSelectedIndex(-1);
             }
-        } catch (Exception e) {
+        } catch (HeadlessException | SQLException e) {
             JOptionPane.showMessageDialog(this, e);
         }
         
     }
+    
+     private boolean isEmpty(JTextField textField){
+        if(textField.getText().isBlank()){
+            textField.setText("");
+            textField.requestFocus();
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+    //método para adicionar usuário
+    private void adicionar(){
+        if(!isEmpty(txtId) && !isEmpty(txtNome) && !isEmpty(txtLogin) && !isEmpty(txtSenha) && cbPerfil.getSelectedIndex() != -1){
+            String sql = "Insert into tbusuarios (iduser, usuario, fone, login, senha, perfil) values (?,?,?,?,?,?)";
+            try {
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtId.getText());
+                pst.setString(2, txtNome.getText());
+                pst.setString(3, txtTelefone.getText());
+                pst.setString(4, txtLogin.getText());
+                pst.setString(5, new String(txtSenha.getPassword()));
+                pst.setString(6, (String) cbPerfil.getSelectedItem());
+                //a linha abaixo insere os dados na tabela de usuários
+                if(pst.executeUpdate() != 0){
+                    JOptionPane.showMessageDialog(null, "Usuário cadastrado com sucesso");
+                }else{
+                    JOptionPane.showMessageDialog(null, "Houve um erro com o cadastro");
+                }
+                //Limpando dados dos campos
+                txtId.setText(null);
+                txtId.requestFocus();
+                txtNome.setText(null);
+                txtTelefone.setText(null);
+                txtLogin.setText(null);
+                txtSenha.setText(null);
+                cbPerfil.setSelectedIndex(-1);
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        }else{
+            JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios");
+        }
+    }
+    
+   
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -75,24 +124,30 @@ public class UserScreen extends javax.swing.JInternalFrame {
         btnRead = new javax.swing.JButton();
         btnUpdate = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
+        lblCampObr = new javax.swing.JLabel();
 
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
         setTitle("Usuários");
         setPreferredSize(new java.awt.Dimension(640, 480));
+        addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                formFocusGained(evt);
+            }
+        });
 
-        lblId.setText("Id");
+        lblId.setText("Id*");
 
-        lblNome.setText("Nome");
+        lblNome.setText("Nome*");
 
         lblTelefone.setText("Telefone");
 
-        lblLogin.setText("Login");
+        lblLogin.setText("Login*");
 
-        lblSenha.setText("Senha");
+        lblSenha.setText("Senha*");
 
-        lblPerfil.setText("Perfil");
+        lblPerfil.setText("Perfil*");
 
         cbPerfil.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "admin", "user" }));
         cbPerfil.setSelectedIndex(-1);
@@ -102,6 +157,11 @@ public class UserScreen extends javax.swing.JInternalFrame {
         btnCreate.setToolTipText("Adicionar");
         btnCreate.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnCreate.setPreferredSize(new java.awt.Dimension(80, 80));
+        btnCreate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCreateActionPerformed(evt);
+            }
+        });
 
         btnRead.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/read.png"))); // NOI18N
         btnRead.setToolTipText("Consultar");
@@ -123,6 +183,8 @@ public class UserScreen extends javax.swing.JInternalFrame {
         btnDelete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnDelete.setPreferredSize(new java.awt.Dimension(80, 80));
 
+        lblCampObr.setText("* Campos Obrigatórios");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -137,25 +199,30 @@ public class UserScreen extends javax.swing.JInternalFrame {
                         .addGap(35, 35, 35)
                         .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(35, 35, 35)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(lblId)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 168, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblLogin)
-                            .addComponent(lblSenha)
-                            .addComponent(lblPerfil)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(lblTelefone, javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(lblNome)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtNome, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
-                            .addComponent(txtTelefone)
-                            .addComponent(txtLogin, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
-                            .addComponent(txtSenha)
-                            .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cbPerfil, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(182, Short.MAX_VALUE))
+                            .addComponent(lblId)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblLogin)
+                                    .addComponent(lblSenha)
+                                    .addComponent(lblPerfil)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(lblTelefone, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(lblNome)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtNome, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
+                                    .addComponent(txtTelefone)
+                                    .addComponent(txtLogin, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
+                                    .addComponent(txtSenha)
+                                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(cbPerfil, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lblCampObr)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -163,7 +230,8 @@ public class UserScreen extends javax.swing.JInternalFrame {
                 .addGap(19, 19, 19)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblId)
-                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblCampObr))
                 .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblNome)
@@ -187,7 +255,7 @@ public class UserScreen extends javax.swing.JInternalFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblPerfil)
                             .addComponent(cbPerfil, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnCreate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnRead, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -204,6 +272,16 @@ public class UserScreen extends javax.swing.JInternalFrame {
         consultar();
     }//GEN-LAST:event_btnReadActionPerformed
 
+    private void btnCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateActionPerformed
+        //realiza o insert
+        adicionar();
+    }//GEN-LAST:event_btnCreateActionPerformed
+
+    private void formFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_formFocusGained
+        //Setando foco para o campo ID
+        txtId.requestFocus();
+    }//GEN-LAST:event_formFocusGained
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCreate;
@@ -211,6 +289,7 @@ public class UserScreen extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnRead;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JComboBox<String> cbPerfil;
+    private javax.swing.JLabel lblCampObr;
     private javax.swing.JLabel lblId;
     private javax.swing.JLabel lblLogin;
     private javax.swing.JLabel lblNome;
