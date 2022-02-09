@@ -4,17 +4,65 @@
  */
 package br.com.infox.screens;
 
+import java.sql.*;
+import br.com.infox.dal.ConnectionModule;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+
 /**
  *
  * @author Marlon
  */
 public class ClientScreen extends javax.swing.JInternalFrame {
 
+    Connection conexao;
+    PreparedStatement pst;
+    ResultSet rs;
+    
     /**
      * Creates new form ClientScreen
      */
     public ClientScreen() {
         initComponents();
+        conexao = ConnectionModule.conector();
+    }
+    
+    private boolean isEmpty(JTextField textField) {
+        if (textField.getText().isBlank()) {
+            textField.setText("");
+            textField.requestFocus();
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    private void adicionar() {
+        if (!isEmpty(txtNome) && !isEmpty(txtTelefone)) {
+            String sql = "Insert into tbclientes (nomecli, endcli, fonecli, emailcli) values (?,?,?,?)";
+            try {
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtNome.getText());
+                pst.setString(2, txtEndereco.getText());
+                pst.setString(3, txtTelefone.getText());
+                pst.setString(4, txtEmail.getText());
+                //a linha abaixo insere os dados na tabela de usuários
+                if (pst.executeUpdate() != 0) {
+                    JOptionPane.showMessageDialog(null, "Cliente cadastrado com sucesso");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Houve um erro com o cadastro");
+                }
+                //Limpando dados dos campos
+                txtNome.setText(null);
+                txtEndereco.setText(null);
+                txtTelefone.setText(null);
+                txtEmail.setText(null);
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios");
+        }
     }
 
     /**
@@ -77,6 +125,11 @@ public class ClientScreen extends javax.swing.JInternalFrame {
         btnCadastrar.setToolTipText("Adicionar");
         btnCadastrar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnCadastrar.setPreferredSize(new java.awt.Dimension(70, 70));
+        btnCadastrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCadastrarActionPerformed(evt);
+            }
+        });
 
         btnAlterar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/update.png"))); // NOI18N
         btnAlterar.setToolTipText("Alterar");
@@ -167,6 +220,11 @@ public class ClientScreen extends javax.swing.JInternalFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
+        //Chama a função de adicinar cadastro
+        adicionar();
+    }//GEN-LAST:event_btnCadastrarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
