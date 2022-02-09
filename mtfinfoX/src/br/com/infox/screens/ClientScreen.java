@@ -9,6 +9,9 @@ import br.com.infox.dal.ConnectionModule;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+//A linha abaixo importa recursos da biblioteca rs2xml.jar
+import net.proteanit.sql.DbUtils;
+
 /**
  *
  * @author Marlon
@@ -39,7 +42,8 @@ public class ClientScreen extends javax.swing.JInternalFrame {
     
     private void adicionar() {
         if (!isEmpty(txtNome) && !isEmpty(txtTelefone)) {
-            String sql = "Insert into tbclientes (nomecli, endcli, fonecli, emailcli) values (?,?,?,?)";
+            String sql = "Insert into tbclientes (nomecli, endcli, fonecli,"
+                    + " emailcli) values (?,?,?,?)";
             try {
                 pst = conexao.prepareStatement(sql);
                 pst.setString(1, txtNome.getText());
@@ -48,9 +52,11 @@ public class ClientScreen extends javax.swing.JInternalFrame {
                 pst.setString(4, txtEmail.getText());
                 //a linha abaixo insere os dados na tabela de usuários
                 if (pst.executeUpdate() != 0) {
-                    JOptionPane.showMessageDialog(null, "Cliente cadastrado com sucesso");
+                    JOptionPane.showMessageDialog(null, "Cliente cadastrado com"
+                            + " sucesso");
                 } else {
-                    JOptionPane.showMessageDialog(null, "Houve um erro com o cadastro");
+                    JOptionPane.showMessageDialog(null, "Houve um erro com o"
+                            + " cadastro");
                 }
                 //Limpando dados dos campos
                 txtNome.setText(null);
@@ -61,8 +67,33 @@ public class ClientScreen extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(null, e);
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios");
+            JOptionPane.showMessageDialog(null, "Preencha todos os campos"
+                    + "obrigatórios");
         }
+    }
+    
+    //método para pesquisar clientes pelo nome com filtro
+    private void pesquisar_cliente(){
+        String sql = "select * from tbclientes where nomecli like ? limit 20";
+        try {
+            pst=conexao.prepareStatement(sql);
+            //passando o conteúdo da caixa de pesquisa para o ?
+            //atenção para o "%" - continuação da string sql
+            pst.setString(1, txtPesquisar.getText()+"%");
+            rs = pst.executeQuery();
+            //a linha abaixo usa a biblioteca rs2xml.jar para preencher a tabela
+            tblClientes.setModel(DbUtils.resultSetToTableModel(rs));
+        } catch (Exception e) {
+        }
+    }
+    
+    //método para setar os campos do formulário com o conteúdo da tabela
+    public void setar_campos(){
+        int setar = tblClientes.getSelectedRow();
+        txtNome.setText(tblClientes.getModel().getValueAt(setar, 1).toString());
+        txtEndereco.setText(tblClientes.getModel().getValueAt(setar, 2).toString());
+        txtTelefone.setText(tblClientes.getModel().getValueAt(setar, 3).toString());
+        txtEmail.setText(tblClientes.getModel().getValueAt(setar, 4).toString());
     }
 
     /**
@@ -96,19 +127,30 @@ public class ClientScreen extends javax.swing.JInternalFrame {
         setMaximizable(true);
         setPreferredSize(new java.awt.Dimension(640, 480));
 
+        txtPesquisar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtPesquisarKeyReleased(evt);
+            }
+        });
+
         lblIconPesquisa.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/pesquisar.png"))); // NOI18N
 
         tblClientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {},
+                {},
+                {},
+                {}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+
             }
         ));
+        tblClientes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblClientesMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblClientes);
 
         lblNome.setText("Nome*");
@@ -225,6 +267,15 @@ public class ClientScreen extends javax.swing.JInternalFrame {
         //Chama a função de adicinar cadastro
         adicionar();
     }//GEN-LAST:event_btnCadastrarActionPerformed
+
+    private void txtPesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPesquisarKeyReleased
+        pesquisar_cliente();
+    }//GEN-LAST:event_txtPesquisarKeyReleased
+
+    private void tblClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblClientesMouseClicked
+        //chamando o método para setar os campos
+        setar_campos();
+    }//GEN-LAST:event_tblClientesMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
