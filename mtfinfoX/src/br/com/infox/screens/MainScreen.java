@@ -79,6 +79,11 @@ public class MainScreen extends javax.swing.JFrame {
 
         menCadCli.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.ALT_DOWN_MASK));
         menCadCli.setText("Cliente");
+        menCadCli.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menCadCliActionPerformed(evt);
+            }
+        });
         menCad.add(menCadCli);
 
         menCadOS.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.ALT_DOWN_MASK));
@@ -205,6 +210,14 @@ public class MainScreen extends javax.swing.JFrame {
         desktop.add(user);
         user.requestFocus();
     }//GEN-LAST:event_menCadUsuActionPerformed
+
+    private void menCadCliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCadCliActionPerformed
+        //as linhas abaixo irão abrir o form UserScreen dentro do Desktop pane
+        ClientScreen client = new ClientScreen();
+        client.setVisible(true);
+        desktop.add(client);
+        client.requestFocus();
+    }//GEN-LAST:event_menCadCliActionPerformed
 
     /**
      * @param args the command line arguments
