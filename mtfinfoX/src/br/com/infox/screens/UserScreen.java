@@ -9,8 +9,10 @@ import br.com.infox.dal.ConnectionModule;
 import java.awt.HeadlessException;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+
 /**
  * User Screen
+ *
  * @author marlon
  */
 public class UserScreen extends javax.swing.JInternalFrame {
@@ -18,16 +20,16 @@ public class UserScreen extends javax.swing.JInternalFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
-    
+
     public UserScreen() {
         initComponents();
         conexao = ConnectionModule.conector();
     }
-    
+
     //método para consultar usuário
-    private void consultar(){
+    private void consultar() {
         String sql = "select * from tbusuarios where iduser = ?";
-        
+
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtId.getText());
@@ -50,22 +52,22 @@ public class UserScreen extends javax.swing.JInternalFrame {
         } catch (HeadlessException | SQLException e) {
             JOptionPane.showMessageDialog(this, e);
         }
-        
+
     }
-    
-     private boolean isEmpty(JTextField textField){
-        if(textField.getText().isBlank()){
+
+    private boolean isEmpty(JTextField textField) {
+        if (textField.getText().isBlank()) {
             textField.setText("");
             textField.requestFocus();
             return true;
-        }else{
+        } else {
             return false;
         }
     }
-    
+
     //método para adicionar usuário
-    private void adicionar(){
-        if(!isEmpty(txtId) && !isEmpty(txtNome) && !isEmpty(txtLogin) && !isEmpty(txtSenha) && cbPerfil.getSelectedIndex() != -1){
+    private void adicionar() {
+        if (!isEmpty(txtId) && !isEmpty(txtNome) && !isEmpty(txtLogin) && !isEmpty(txtSenha) && cbPerfil.getSelectedIndex() != -1) {
             String sql = "Insert into tbusuarios (iduser, usuario, fone, login, senha, perfil) values (?,?,?,?,?,?)";
             try {
                 pst = conexao.prepareStatement(sql);
@@ -76,9 +78,9 @@ public class UserScreen extends javax.swing.JInternalFrame {
                 pst.setString(5, new String(txtSenha.getPassword()));
                 pst.setString(6, (String) cbPerfil.getSelectedItem());
                 //a linha abaixo insere os dados na tabela de usuários
-                if(pst.executeUpdate() != 0){
+                if (pst.executeUpdate() != 0) {
                     JOptionPane.showMessageDialog(null, "Usuário cadastrado com sucesso");
-                }else{
+                } else {
                     JOptionPane.showMessageDialog(null, "Houve um erro com o cadastro");
                 }
                 //Limpando dados dos campos
@@ -92,14 +94,14 @@ public class UserScreen extends javax.swing.JInternalFrame {
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(null, e);
             }
-        }else{
+        } else {
             JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios");
         }
     }
-    
-   //método para alterar dados do usuário
-    private void alterar(){
-        if(!isEmpty(txtId) && !isEmpty(txtNome) && !isEmpty(txtLogin) && !isEmpty(txtSenha) && cbPerfil.getSelectedIndex() != -1){
+
+    //método para alterar dados do usuário
+    private void alterar() {
+        if (!isEmpty(txtId) && !isEmpty(txtNome) && !isEmpty(txtLogin) && !isEmpty(txtSenha) && cbPerfil.getSelectedIndex() != -1) {
             String sql = "update tbusuarios set usuario=?, fone=?, login=?, senha=?, perfil=? where iduser=?";
             try {
                 pst = conexao.prepareStatement(sql);
@@ -110,7 +112,7 @@ public class UserScreen extends javax.swing.JInternalFrame {
                 pst.setString(5, (String) cbPerfil.getSelectedItem());
                 pst.setString(6, txtId.getText());
                 //a linha abaixo insere os dados na tabela de usuários
-                if(pst.executeUpdate() != 0){
+                if (pst.executeUpdate() != 0) {
                     txtId.setText(null);
                     txtId.requestFocus();
                     txtNome.setText(null);
@@ -119,16 +121,40 @@ public class UserScreen extends javax.swing.JInternalFrame {
                     txtSenha.setText(null);
                     cbPerfil.setSelectedIndex(-1);
                     JOptionPane.showMessageDialog(null, "Dados do usuário alterados com sucesso");
-                }else{
+                } else {
                     JOptionPane.showMessageDialog(null, "Houve um erro com alteração");
                 }
             } catch (HeadlessException | SQLException e) {
                 JOptionPane.showMessageDialog(null, e);
             }
-        }else{
-           JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios"); 
+        } else {
+            JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios");
         }
-        
+
+    }
+
+    //método para remover dados de usuário
+    private void remover() {
+        int confirmar = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover este usuário?", "Atenção", JOptionPane.YES_NO_OPTION);
+        if (confirmar == JOptionPane.YES_OPTION) {
+            try {
+                String sql = "delete from tbusuarios where iduser=?";
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtId.getText());
+                if (pst.executeUpdate() != 0) {
+                    txtId.setText(null);
+                    txtId.requestFocus();
+                    txtNome.setText(null);
+                    txtTelefone.setText(null);
+                    txtLogin.setText(null);
+                    txtSenha.setText(null);
+                    cbPerfil.setSelectedIndex(-1);
+                    JOptionPane.showMessageDialog(null, "Exclusão realizada com sucesso");
+                }
+            } catch (SQLException e) {
+                JOptionPane.showConfirmDialog(this, e);
+            }
+        }
     }
 
     /**
@@ -219,6 +245,11 @@ public class UserScreen extends javax.swing.JInternalFrame {
         btnDelete.setToolTipText("Remover");
         btnDelete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnDelete.setPreferredSize(new java.awt.Dimension(80, 80));
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         lblCampObr.setText("* Campos Obrigatórios");
 
@@ -323,6 +354,11 @@ public class UserScreen extends javax.swing.JInternalFrame {
         //realiza a alteração
         alterar();
     }//GEN-LAST:event_btnUpdateActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        //realiza a exclusão
+        remover();
+    }//GEN-LAST:event_btnDeleteActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
