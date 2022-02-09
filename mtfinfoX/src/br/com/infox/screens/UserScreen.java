@@ -4,17 +4,50 @@
  */
 package br.com.infox.screens;
 
+import java.sql.*;
+import br.com.infox.dal.ConnectionModule;
+import javax.swing.JOptionPane;
 /**
- *
+ * User Screen
  * @author marlon
  */
 public class UserScreen extends javax.swing.JInternalFrame {
 
-    /**
-     * Creates new form UserScreen
-     */
+    Connection conexao = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+    
     public UserScreen() {
         initComponents();
+        conexao = ConnectionModule.conector();
+    }
+    
+    private void consultar(){
+        String sql = "select * from tbusuarios where iduser = ?";
+        
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtId.getText());
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                txtNome.setText(rs.getString("usuario"));
+                txtTelefone.setText(rs.getString("fone"));
+                txtLogin.setText(rs.getString("login"));
+                txtSenha.setText(rs.getString("senha"));
+                //a linha abaixo se refere ao combobox
+                cbPerfil.setSelectedItem(rs.getString("perfil"));
+            } else {
+                JOptionPane.showMessageDialog(null, "Usuário não cadastrado");
+                txtNome.setText(null);
+                txtTelefone.setText(null);
+                txtLogin.setText(null);
+                txtSenha.setText(null);
+                cbPerfil.setSelectedIndex(-1);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e);
+        }
+        
     }
 
     /**
@@ -62,6 +95,7 @@ public class UserScreen extends javax.swing.JInternalFrame {
         lblPerfil.setText("Perfil");
 
         cbPerfil.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "admin", "user" }));
+        cbPerfil.setSelectedIndex(-1);
         cbPerfil.setMinimumSize(new java.awt.Dimension(80, 22));
 
         btnCreate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/create.png"))); // NOI18N
@@ -73,6 +107,11 @@ public class UserScreen extends javax.swing.JInternalFrame {
         btnRead.setToolTipText("Consultar");
         btnRead.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnRead.setPreferredSize(new java.awt.Dimension(80, 80));
+        btnRead.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReadActionPerformed(evt);
+            }
+        });
 
         btnUpdate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/update.png"))); // NOI18N
         btnUpdate.setToolTipText("Alterar");
@@ -159,6 +198,11 @@ public class UserScreen extends javax.swing.JInternalFrame {
 
         setBounds(0, 0, 640, 480);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnReadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReadActionPerformed
+        //realiza a consulta
+        consultar();
+    }//GEN-LAST:event_btnReadActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
