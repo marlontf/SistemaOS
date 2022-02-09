@@ -234,7 +234,7 @@ public class MainScreen extends javax.swing.JFrame {
     private javax.swing.JDesktopPane jdpPanel;
     private javax.swing.JLabel lblData;
     private javax.swing.JLabel lblLogo;
-    private javax.swing.JLabel lblUsuario;
+    public static javax.swing.JLabel lblUsuario;
     private javax.swing.JMenu menAju;
     private javax.swing.JMenuItem menAjuSob;
     private javax.swing.JMenu menCad;

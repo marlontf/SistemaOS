@@ -5,6 +5,7 @@
 package br.com.infox.screens;
 
 import br.com.infox.dal.ConnectionModule;
+import java.awt.Color;
 import java.sql.*;
 import javax.swing.JOptionPane;
 
@@ -29,7 +30,18 @@ public class LoginScreen extends javax.swing.JFrame {
             rs = pst.executeQuery();
             //se existir usuário e senha
             if (rs.next()) {
-                new MainScreen().setVisible(true);
+                //a linha abaixo obtem o conteúdo do campo perfil da tabela tbusuarios
+                String perfil = rs.getString("perfil");
+                String usuario = rs.getString("usuario");
+                //a estrutura abaixo faz o tratamento do perfil do usuário
+                MainScreen main = new MainScreen();
+                if(perfil.equals("admin")){
+                    main.menRel.setEnabled(true);
+                    main.menCadUsu.setEnabled(true);
+                    main.lblUsuario.setForeground(Color.red);
+                }
+                main.lblUsuario.setText(usuario);
+                main.setVisible(true);
                 this.dispose();
                 conexao.close();
             } else {
