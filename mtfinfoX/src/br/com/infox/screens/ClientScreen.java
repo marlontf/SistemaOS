@@ -61,12 +61,7 @@ public class ClientScreen extends javax.swing.JInternalFrame {
                             + " cadastro");
                 }
                 //Limpando dados dos campos
-                txtNome.setText(null);
-                txtEndereco.setText(null);
-                txtTelefone.setText(null);
-                txtEmail.setText(null);
-                txtPesquisar.setText(null);
-                tblClientes.setModel(new DefaultTableModel());
+                limpar_campos();
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(null, e);
             }
@@ -95,13 +90,7 @@ public class ClientScreen extends javax.swing.JInternalFrame {
             }
         }else{
             tblClientes.setModel(new DefaultTableModel());
-            txtNome.setText(null);
-            txtEndereco.setText(null);
-            txtTelefone.setText(null);
-            txtEmail.setText(null);
-            txtPesquisar.setText(null);
-            tblClientes.setModel(new DefaultTableModel());
-            btnCadastrar.setEnabled(true);
+            limpar_campos();
         }
         
         
@@ -136,13 +125,7 @@ public class ClientScreen extends javax.swing.JInternalFrame {
                 if (pst.executeUpdate() != 0) {
                     
                     JOptionPane.showMessageDialog(null, "Dados do cliente alterados com sucesso");
-                    txtNome.setText(null);
-                    txtEndereco.setText(null);
-                    txtTelefone.setText(null);
-                    txtEmail.setText(null);
-                    txtPesquisar.setText(null);
-                    tblClientes.setModel(new DefaultTableModel());
-                    btnCadastrar.setEnabled(true);
+                    limpar_campos();
                 } else {
                     JOptionPane.showMessageDialog(null, "Houve um erro com alteração");
                 }
@@ -166,13 +149,7 @@ public class ClientScreen extends javax.swing.JInternalFrame {
                     pst.setInt(1, setar);
                     if (pst.executeUpdate() != 0) {
                         JOptionPane.showMessageDialog(null, "Exclusão realizada com sucesso");
-                        txtNome.setText(null);
-                        txtEndereco.setText(null);
-                        txtTelefone.setText(null);
-                        txtEmail.setText(null);
-                        txtPesquisar.setText(null);
-                        tblClientes.setModel(new DefaultTableModel());
-                        btnCadastrar.setEnabled(true);
+                        limpar_campos();
                     }
                 } catch (SQLException e) {
                     JOptionPane.showConfirmDialog(this, e);
@@ -182,6 +159,16 @@ public class ClientScreen extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(null, "Pesquise e selecione um cliente antes da exclusão");
         }
         
+    }
+    
+    private void limpar_campos(){
+        txtNome.setText(null);
+        txtEndereco.setText(null);
+        txtTelefone.setText(null);
+        txtEmail.setText(null);
+        txtPesquisar.setText(null);
+        tblClientes.setModel(new DefaultTableModel());
+        btnCadastrar.setEnabled(true);
     }
     
     /**
