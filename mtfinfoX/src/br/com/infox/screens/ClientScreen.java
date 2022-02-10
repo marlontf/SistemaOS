@@ -145,6 +145,34 @@ public class ClientScreen extends javax.swing.JInternalFrame {
 
     }
 
+    private void remover() {
+        if(tblClientes.getSelectedRow() != -1){
+            int setar = (int)tblClientes.getModel().getValueAt(tblClientes.getSelectedRow(), 0);
+            int confirmar = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover este usuário?", "Atenção", JOptionPane.YES_NO_OPTION);
+            if (confirmar == JOptionPane.YES_OPTION) {
+                try {
+                    String sql = "delete from tbclientes where idcli=?";
+                    pst = conexao.prepareStatement(sql);
+                    pst.setInt(1, setar);
+                    if (pst.executeUpdate() != 0) {
+                        JOptionPane.showMessageDialog(null, "Exclusão realizada com sucesso");
+                        txtNome.setText(null);
+                        txtEndereco.setText(null);
+                        txtTelefone.setText(null);
+                        txtEmail.setText(null);
+                        txtPesquisar.setText(null);
+                        tblClientes.setModel(new DefaultTableModel());
+                    }
+                } catch (SQLException e) {
+                    JOptionPane.showConfirmDialog(this, e);
+                }
+            }
+        }else{
+            JOptionPane.showMessageDialog(null, "Pesquise e selecione um cliente antes da exclusão");
+        }
+        
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -236,6 +264,11 @@ public class ClientScreen extends javax.swing.JInternalFrame {
         btnExcluir.setToolTipText("Remover");
         btnExcluir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnExcluir.setPreferredSize(new java.awt.Dimension(70, 70));
+        btnExcluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExcluirActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -335,6 +368,11 @@ public class ClientScreen extends javax.swing.JInternalFrame {
         //chama o método para alteração do cliente
         alterar();
     }//GEN-LAST:event_btnAlterarActionPerformed
+
+    private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
+        //chama o método de remoção
+        remover();
+    }//GEN-LAST:event_btnExcluirActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
