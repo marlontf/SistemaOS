@@ -234,6 +234,7 @@ public class ClientScreen extends javax.swing.JInternalFrame {
 
             }
         ));
+        tblClientes.setFocusable(false);
         tblClientes.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tblClientesMouseClicked(evt);
