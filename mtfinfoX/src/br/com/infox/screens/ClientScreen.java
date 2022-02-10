@@ -6,8 +6,10 @@ package br.com.infox.screens;
 
 import java.sql.*;
 import br.com.infox.dal.ConnectionModule;
+import java.awt.HeadlessException;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 
 //A linha abaixo importa recursos da biblioteca rs2xml.jar
 import net.proteanit.sql.DbUtils;
@@ -21,7 +23,7 @@ public class ClientScreen extends javax.swing.JInternalFrame {
     Connection conexao;
     PreparedStatement pst;
     ResultSet rs;
-    
+
     /**
      * Creates new form ClientScreen
      */
@@ -29,7 +31,7 @@ public class ClientScreen extends javax.swing.JInternalFrame {
         initComponents();
         conexao = ConnectionModule.conector();
     }
-    
+
     private boolean isEmpty(JTextField textField) {
         if (textField.getText().isBlank()) {
             textField.setText("");
@@ -39,7 +41,7 @@ public class ClientScreen extends javax.swing.JInternalFrame {
             return false;
         }
     }
-    
+
     private void adicionar() {
         if (!isEmpty(txtNome) && !isEmpty(txtTelefone)) {
             String sql = "Insert into tbclientes (nomecli, endcli, fonecli,"
@@ -63,6 +65,8 @@ public class ClientScreen extends javax.swing.JInternalFrame {
                 txtEndereco.setText(null);
                 txtTelefone.setText(null);
                 txtEmail.setText(null);
+                txtPesquisar.setText(null);
+                tblClientes.setModel(new DefaultTableModel());
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(null, e);
             }
@@ -71,29 +75,73 @@ public class ClientScreen extends javax.swing.JInternalFrame {
                     + "obrigatórios");
         }
     }
-    
+
     //método para pesquisar clientes pelo nome com filtro
-    private void pesquisar_cliente(){
-        String sql = "select * from tbclientes where nomecli like ? limit 20";
-        try {
-            pst=conexao.prepareStatement(sql);
-            //passando o conteúdo da caixa de pesquisa para o ?
-            //atenção para o "%" - continuação da string sql
-            pst.setString(1, txtPesquisar.getText()+"%");
-            rs = pst.executeQuery();
-            //a linha abaixo usa a biblioteca rs2xml.jar para preencher a tabela
-            tblClientes.setModel(DbUtils.resultSetToTableModel(rs));
-        } catch (Exception e) {
+    private void pesquisar_cliente() {
+        if(!txtPesquisar.getText().isBlank()){
+            try {
+                String sql = "select * from tbclientes where nomecli like ? limit 20";
+                pst = conexao.prepareStatement(sql);
+                //passando o conteúdo da caixa de pesquisa para o ?
+                //atenção para o "%" - continuação da string sql
+                pst.setString(1, txtPesquisar.getText() + "%");
+                rs = pst.executeQuery();
+                //a linha abaixo usa a biblioteca rs2xml.jar para preencher a tabela
+                tblClientes.setModel(DbUtils.resultSetToTableModel(rs));
+            } catch (SQLException e) {
+                JOptionPane.showConfirmDialog(this, e);
+            }
+        }else{
+            tblClientes.setModel(new DefaultTableModel());
         }
+        
+        
     }
-    
+
     //método para setar os campos do formulário com o conteúdo da tabela
-    public void setar_campos(){
+    public void setar_campos() {
         int setar = tblClientes.getSelectedRow();
         txtNome.setText(tblClientes.getModel().getValueAt(setar, 1).toString());
         txtEndereco.setText(tblClientes.getModel().getValueAt(setar, 2).toString());
         txtTelefone.setText(tblClientes.getModel().getValueAt(setar, 3).toString());
         txtEmail.setText(tblClientes.getModel().getValueAt(setar, 4).toString());
+    }
+
+    private void alterar() {
+        int setar = 0;
+        if(tblClientes.getSelectedRow() != -1){
+            setar = (int)tblClientes.getModel().getValueAt(tblClientes.getSelectedRow(), 0);
+        }
+        
+        if (!isEmpty(txtNome) && !isEmpty(txtTelefone)) {
+            String sql = "update tbclientes set nomecli=?, endcli=?, fonecli=?, emailcli=? where idcli = ?";
+            try {
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtNome.getText());
+                pst.setString(2, txtEndereco.getText());
+                pst.setString(3, txtTelefone.getText());
+                pst.setString(4, txtEmail.getText());
+                pst.setInt(5, setar);
+                //a linha abaixo insere os dados na tabela de usuários
+                if (pst.executeUpdate() != 0) {
+                    
+                    JOptionPane.showMessageDialog(null, "Dados do cliente alterados com sucesso");
+                    txtNome.setText(null);
+                    txtEndereco.setText(null);
+                    txtTelefone.setText(null);
+                    txtEmail.setText(null);
+                    txtPesquisar.setText(null);
+                    tblClientes.setModel(new DefaultTableModel());
+                } else {
+                    JOptionPane.showMessageDialog(null, "Houve um erro com alteração");
+                }
+            } catch (HeadlessException | SQLException e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios");
+        }
+
     }
 
     /**
@@ -177,6 +225,11 @@ public class ClientScreen extends javax.swing.JInternalFrame {
         btnAlterar.setToolTipText("Alterar");
         btnAlterar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAlterar.setPreferredSize(new java.awt.Dimension(70, 70));
+        btnAlterar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAlterarActionPerformed(evt);
+            }
+        });
 
         btnExcluir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/delete.png"))); // NOI18N
         btnExcluir.setToolTipText("Remover");
@@ -276,6 +329,11 @@ public class ClientScreen extends javax.swing.JInternalFrame {
         //chamando o método para setar os campos
         setar_campos();
     }//GEN-LAST:event_tblClientesMouseClicked
+
+    private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
+        //chama o método para alteração do cliente
+        alterar();
+    }//GEN-LAST:event_btnAlterarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
