@@ -94,6 +94,13 @@ public class ClientScreen extends javax.swing.JInternalFrame {
             }
         }else{
             tblClientes.setModel(new DefaultTableModel());
+            txtNome.setText(null);
+            txtEndereco.setText(null);
+            txtTelefone.setText(null);
+            txtEmail.setText(null);
+            txtPesquisar.setText(null);
+            tblClientes.setModel(new DefaultTableModel());
+            btnCadastrar.setEnabled(true);
         }
         
         
@@ -106,6 +113,7 @@ public class ClientScreen extends javax.swing.JInternalFrame {
         txtEndereco.setText(tblClientes.getModel().getValueAt(setar, 2).toString());
         txtTelefone.setText(tblClientes.getModel().getValueAt(setar, 3).toString());
         txtEmail.setText(tblClientes.getModel().getValueAt(setar, 4).toString());
+        btnCadastrar.setEnabled(false);
     }
 
     private void alterar() {
@@ -133,6 +141,7 @@ public class ClientScreen extends javax.swing.JInternalFrame {
                     txtEmail.setText(null);
                     txtPesquisar.setText(null);
                     tblClientes.setModel(new DefaultTableModel());
+                    btnCadastrar.setEnabled(true);
                 } else {
                     JOptionPane.showMessageDialog(null, "Houve um erro com alteração");
                 }
@@ -162,6 +171,7 @@ public class ClientScreen extends javax.swing.JInternalFrame {
                         txtEmail.setText(null);
                         txtPesquisar.setText(null);
                         tblClientes.setModel(new DefaultTableModel());
+                        btnCadastrar.setEnabled(true);
                     }
                 } catch (SQLException e) {
                     JOptionPane.showConfirmDialog(this, e);
