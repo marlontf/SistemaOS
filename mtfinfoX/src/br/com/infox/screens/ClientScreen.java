@@ -80,7 +80,7 @@ public class ClientScreen extends javax.swing.JInternalFrame {
     private void pesquisar_cliente() {
         if(!txtPesquisar.getText().isBlank()){
             try {
-                String sql = "select * from tbclientes where nomecli like ? limit 20";
+                String sql = "select idcli Id, nomecli Nome, endcli Endereço,fonecli Telefone, emailcli Email from tbclientes where nomecli like ? limit 20";
                 pst = conexao.prepareStatement(sql);
                 //passando o conteúdo da caixa de pesquisa para o ?
                 //atenção para o "%" - continuação da string sql
