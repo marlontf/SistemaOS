@@ -88,6 +88,7 @@ public class ClientScreen extends javax.swing.JInternalFrame {
                 rs = pst.executeQuery();
                 //a linha abaixo usa a biblioteca rs2xml.jar para preencher a tabela
                 tblClientes.setModel(DbUtils.resultSetToTableModel(rs));
+                tblClientes.setDefaultEditor(Object.class, null);
             } catch (SQLException e) {
                 JOptionPane.showConfirmDialog(this, e);
             }
@@ -207,7 +208,7 @@ public class ClientScreen extends javax.swing.JInternalFrame {
 
         lblTelefone.setText("Telefone*");
 
-        lblEmail.setText("Email*");
+        lblEmail.setText("Email");
 
         lblCampObr.setText("* Campos Obrigatórios");
 
