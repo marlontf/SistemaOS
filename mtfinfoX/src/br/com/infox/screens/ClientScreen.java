@@ -200,7 +200,13 @@ public class ClientScreen extends javax.swing.JInternalFrame {
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
+        setTitle("Clientes");
         setPreferredSize(new java.awt.Dimension(640, 480));
+        addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                formFocusGained(evt);
+            }
+        });
 
         txtPesquisar.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -372,6 +378,11 @@ public class ClientScreen extends javax.swing.JInternalFrame {
         //chama o método de remoção
         remover();
     }//GEN-LAST:event_btnExcluirActionPerformed
+
+    private void formFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_formFocusGained
+        //Setar foco no campo de pesquisa
+        txtPesquisar.requestFocus();
+    }//GEN-LAST:event_formFocusGained
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
