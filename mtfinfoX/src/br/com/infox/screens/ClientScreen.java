@@ -89,6 +89,7 @@ public class ClientScreen extends javax.swing.JInternalFrame {
                 //a linha abaixo usa a biblioteca rs2xml.jar para preencher a tabela
                 tblClientes.setModel(DbUtils.resultSetToTableModel(rs));
                 tblClientes.setDefaultEditor(Object.class, null);
+                tblClientes.getTableHeader().setReorderingAllowed(false);
             } catch (SQLException e) {
                 JOptionPane.showConfirmDialog(this, e);
             }
