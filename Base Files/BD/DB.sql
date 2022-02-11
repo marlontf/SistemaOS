@@ -62,3 +62,7 @@ add column
 update tbusuarios set perfil="admin" where iduser = 2;
 update tbusuarios set perfil="admin" where iduser = 3;
 update tbusuarios set perfil="user" where iduser = 1;
+
+-- a linha abaixo altera a tabela adicinando um campo em uma determinada posição
+alter table tbos add tipo varchar(15) not null after data_os;
+alter table tbos add situacao varchar(20) not null after tipo;

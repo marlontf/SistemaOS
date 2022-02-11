@@ -16,14 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `dbinfox`
---
-
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `dbinfox` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
-
-USE `dbinfox`;
-
---
 -- Table structure for table `tbclientes`
 --
 
@@ -37,7 +29,7 @@ CREATE TABLE `tbclientes` (
   `fonecli` varchar(50) NOT NULL,
   `emailcli` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`idcli`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -46,7 +38,7 @@ CREATE TABLE `tbclientes` (
 
 LOCK TABLES `tbclientes` WRITE;
 /*!40000 ALTER TABLE `tbclientes` DISABLE KEYS */;
-INSERT INTO `tbclientes` VALUES (1,'Linus Torvalds','Rua Tux , 2015','9999-9999','linus@linux.com');
+INSERT INTO `tbclientes` VALUES (1,'Linus Torvalds','Rua Tux , 2015','9999-9999','linus@linux.com'),(2,'João Antônio','Rua do João','1111-1111','joao@joao.com.br'),(3,'José Matias','Rua do José','2222-2222','jose@jose.com.br'),(4,'Joaquim Xavier','Rua do Joaquim','3333-3333','joaquim@joaquim.com.br'),(5,'Juliana Paes','Rua da Juliana','4444-4444','juliana@juliana.com.br'),(6,'Marlon Tavares','Rua do Marlon','5555-5555','marlon@marlon.com.br');
 /*!40000 ALTER TABLE `tbclientes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -60,6 +52,8 @@ DROP TABLE IF EXISTS `tbos`;
 CREATE TABLE `tbos` (
   `os` int(11) NOT NULL AUTO_INCREMENT,
   `data_os` timestamp NOT NULL DEFAULT current_timestamp(),
+  `tipo` varchar(15) NOT NULL,
+  `situacao` varchar(20) NOT NULL,
   `equipamento` varchar(150) NOT NULL,
   `defeito` varchar(150) NOT NULL,
   `servico` varchar(150) DEFAULT NULL,
@@ -69,7 +63,7 @@ CREATE TABLE `tbos` (
   PRIMARY KEY (`os`),
   KEY `idcli` (`idcli`),
   CONSTRAINT `tbos_ibfk_1` FOREIGN KEY (`idcli`) REFERENCES `tbclientes` (`idcli`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -78,7 +72,7 @@ CREATE TABLE `tbos` (
 
 LOCK TABLES `tbos` WRITE;
 /*!40000 ALTER TABLE `tbos` DISABLE KEYS */;
-INSERT INTO `tbos` VALUES (1,'2022-02-08 01:06:02','Notebook','Não liga','Troca da fonte','Zé',87.50,1);
+INSERT INTO `tbos` VALUES (2,'2022-02-08 00:22:15','','','Notebook','Não liga','Troca da fonte','Zé',87.50,1);
 /*!40000 ALTER TABLE `tbos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -95,6 +89,7 @@ CREATE TABLE `tbusuarios` (
   `fone` varchar(15) DEFAULT NULL,
   `login` varchar(15) NOT NULL,
   `senha` varchar(15) NOT NULL,
+  `perfil` varchar(20) NOT NULL,
   PRIMARY KEY (`iduser`),
   UNIQUE KEY `login` (`login`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -106,7 +101,7 @@ CREATE TABLE `tbusuarios` (
 
 LOCK TABLES `tbusuarios` WRITE;
 /*!40000 ALTER TABLE `tbusuarios` DISABLE KEYS */;
-INSERT INTO `tbusuarios` VALUES (1,'José de Assis','9999-9999','joseassis','123456'),(2,'Marlon Tavares','8888-8888','marlontf','naocadastrei'),(3,'Administrador','9999-9999','admin','admin');
+INSERT INTO `tbusuarios` VALUES (1,'José de Assis','9999-9999','joseassis','123456','user'),(2,'Marlon Tavares','8888-8888','marlontf','naocadastrei','admin'),(3,'Administrador','9999-9999','admin','admin','admin');
 /*!40000 ALTER TABLE `tbusuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -119,4 +114,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-02-07 22:25:51
+-- Dump completed on 2022-02-11 15:54:29
