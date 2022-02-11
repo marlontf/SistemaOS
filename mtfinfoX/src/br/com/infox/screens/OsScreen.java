@@ -98,7 +98,7 @@ public class OsScreen extends javax.swing.JInternalFrame {
                 pst.setString(4, txtDefeito.getText());
                 pst.setString(5, txtServico.getText());
                 pst.setString(6, txtTecnico.getText());
-                pst.setString(7, (txtValorTotal.getText().isBlank())? null : txtValorTotal.getText());
+                pst.setString(7, txtValorTotal.getText().replace(",", "."));
                 pst.setInt(8, Integer.parseInt(txtId.getText()));
                 if(pst.executeUpdate() >0){
                     JOptionPane.showMessageDialog(null, "OS emitida com sucesso");
@@ -310,6 +310,8 @@ public class OsScreen extends javax.swing.JInternalFrame {
         lblTecnico.setText("Técnico");
 
         lblValorTotal.setText("Valor Total:");
+
+        txtValorTotal.setText("0");
 
         btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/create.png"))); // NOI18N
         btnAdicionar.setToolTipText("Adicionar");
