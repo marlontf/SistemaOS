@@ -7,6 +7,8 @@ package br.com.infox.screens;
 import java.sql.*;
 import br.com.infox.dal.ConnectionModule;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import net.proteanit.sql.DbUtils;
 
@@ -20,9 +22,22 @@ public class OsScreen extends javax.swing.JInternalFrame {
     PreparedStatement pst = null;
     ResultSet rs = null;
     
+    //a linha abaixo cria uma variável para armazenar o texto de acordo com o
+    //radiobutton selecionado
+    private String tipo = null;
+    
     public OsScreen() {
         initComponents();
         conexao = ConnectionModule.conector();
+    }
+    
+    public boolean isEmptyTxtField(JTextField textField){
+        if(textField.getText().isBlank()){
+            textField.requestFocus();
+            return true;
+        }else{
+            return false;
+        }
     }
     
     public void limpar_campos(){
@@ -31,6 +46,7 @@ public class OsScreen extends javax.swing.JInternalFrame {
         txtNumeroOs.setText(null);
         txtData.setText(null);
         buttonGroup1.clearSelection();
+        tipo = null;
         cbxSituacao.setSelectedIndex(-1);
         txtEquipamento.setText(null);
         txtDefeito.setText(null);
@@ -41,7 +57,9 @@ public class OsScreen extends javax.swing.JInternalFrame {
     
     private void pesquisar_cliente(){
         if(!txtPesquisar.getText().isBlank()){
-            String sql = "Select idcli Id, nomecli Nome, fonecli Fone from tbclientes where nomecli like ? order by nomecli limit 20";
+            String sql = "Select idcli Id, nomecli Nome, fonecli Fone from "
+                    + "tbclientes where nomecli like ? order by nomecli "
+                    + "limit 20";
             try {
                 pst = conexao.prepareStatement(sql);
                 pst.setString(1, txtPesquisar.getText()+"%");
@@ -58,8 +76,41 @@ public class OsScreen extends javax.swing.JInternalFrame {
     private void setar_campos(){
         if(!txtPesquisar.getText().isBlank()){
             int setar = tblClientes.getSelectedRow();
-            txtId.setText(tblClientes.getModel().getValueAt(setar, 0).toString());
+            txtId.setText(tblClientes.getModel().getValueAt(setar, 0)
+                .toString());
         }
+    }
+    
+    //método para cadastrar uma OS
+    private void emitir_os(){
+        if(!isEmptyTxtField(txtId) && !isEmptyTxtField(txtEquipamento) 
+                && !isEmptyTxtField(txtDefeito) 
+                && cbxSituacao.getSelectedIndex() != -1 && tipo != null){
+            
+            String sql = "insert into tbos (tipo, situacao, equipamento, "
+                    + "defeito, servico, tecnico, valor, idcli) "
+                    + "values(?,?,?,?,?,?,?,?)";
+            try {
+                pst=conexao.prepareStatement(sql);
+                pst.setString(1, tipo);
+                pst.setString(2, cbxSituacao.getSelectedItem().toString());
+                pst.setString(3, txtEquipamento.getText());
+                pst.setString(4, txtDefeito.getText());
+                pst.setString(5, txtServico.getText());
+                pst.setString(6, txtTecnico.getText());
+                pst.setString(7, (txtValorTotal.getText().isBlank())? null : txtValorTotal.getText());
+                pst.setInt(8, Integer.parseInt(txtId.getText()));
+                if(pst.executeUpdate() >0){
+                    JOptionPane.showMessageDialog(null, "OS emitida com sucesso");
+                    limpar_campos();
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, e);
+            }
+        }else{
+            JOptionPane.showMessageDialog(null, "Preencha todos os campos requeridos");
+        }
+            
     }
 
     /**
@@ -123,9 +174,19 @@ public class OsScreen extends javax.swing.JInternalFrame {
 
         buttonGroup1.add(rdbOrcamento);
         rdbOrcamento.setText("Orçamento");
+        rdbOrcamento.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdbOrcamentoActionPerformed(evt);
+            }
+        });
 
         buttonGroup1.add(rdbOrdemServico);
         rdbOrdemServico.setText("Ordem de Serviço");
+        rdbOrdemServico.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdbOrdemServicoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -165,9 +226,10 @@ public class OsScreen extends javax.swing.JInternalFrame {
                 .addContainerGap(14, Short.MAX_VALUE))
         );
 
-        lblSituacao.setText("Situação");
+        lblSituacao.setText("Situação*");
 
         cbxSituacao.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Aguardando aprovação", "Aguardando peças", "Abandonado pelo cliente", "Entraga OK", "Na bancada", "Orçamento REPROVADO", "Retornou" }));
+        cbxSituacao.setSelectedIndex(-1);
 
         pnlCliente.setBorder(javax.swing.BorderFactory.createTitledBorder("Cliente"));
 
@@ -209,7 +271,7 @@ public class OsScreen extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(pnlClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlClienteLayout.createSequentialGroup()
-                        .addComponent(txtPesquisar, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
+                        .addComponent(txtPesquisar, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblPesquisar)
                         .addGap(12, 12, 12)
@@ -252,6 +314,11 @@ public class OsScreen extends javax.swing.JInternalFrame {
         btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/create.png"))); // NOI18N
         btnAdicionar.setToolTipText("Adicionar");
         btnAdicionar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnAdicionar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAdicionarActionPerformed(evt);
+            }
+        });
 
         btnConsultar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/read.png"))); // NOI18N
         btnConsultar.setToolTipText("Pesquisar");
@@ -268,6 +335,11 @@ public class OsScreen extends javax.swing.JInternalFrame {
         btnImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/print.png"))); // NOI18N
         btnImprimir.setToolTipText("Imprimir");
         btnImprimir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnImprimir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImprimirActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -298,8 +370,8 @@ public class OsScreen extends javax.swing.JInternalFrame {
                             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(lblSituacao)
-                                .addGap(37, 37, 37)
-                                .addComponent(cbxSituacao, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(32, 32, 32)
+                                .addComponent(cbxSituacao, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(pnlCliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -373,6 +445,26 @@ public class OsScreen extends javax.swing.JInternalFrame {
         //Chamando o método setar campos
         setar_campos();
     }//GEN-LAST:event_tblClientesMouseClicked
+
+    private void btnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImprimirActionPerformed
+        // TODO add your handling code here:
+        System.out.println(buttonGroup1.getSelection());
+    }//GEN-LAST:event_btnImprimirActionPerformed
+
+    private void rdbOrcamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbOrcamentoActionPerformed
+        // TODO add your handling code here:
+        tipo = "Orçamento";
+    }//GEN-LAST:event_rdbOrcamentoActionPerformed
+
+    private void rdbOrdemServicoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbOrdemServicoActionPerformed
+        // TODO add your handling code here:
+        tipo = "Ordem de serviço";
+    }//GEN-LAST:event_rdbOrdemServicoActionPerformed
+
+    private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed
+        // Chamando o método para emitir uma OS
+        emitir_os();
+    }//GEN-LAST:event_btnAdicionarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
