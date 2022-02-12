@@ -6,6 +6,7 @@ package br.com.infox.screens;
 
 import java.sql.*;
 import br.com.infox.dal.ConnectionModule;
+import java.awt.HeadlessException;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -113,6 +114,45 @@ public class OsScreen extends javax.swing.JInternalFrame {
             
     }
 
+    private void pesquisar_os(){
+        //a linha abaixo cria uma caixa de entrada do tipo JOption Pane
+        String num_os = JOptionPane.showInputDialog("Número da OS");
+        String sql = "select * from tbos where os = "+num_os;
+        
+        try {
+            pst=conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            if(rs.next()){
+                txtNumeroOs.setText(rs.getString("os"));
+                txtData.setText(rs.getString("data_os"));
+                //setando os radio buttons
+                String rdbTipo = rs.getString("tipo");
+                if(rdbTipo.equals("OS")){
+                    rdbOrdemServico.setSelected(true);
+                }else if(rdbTipo.equals("Orçamento")){
+                    rdbOrcamento.setSelected(true);
+                }
+                cbxSituacao.setSelectedItem(rs.getString("situacao"));
+                txtEquipamento.setText(rs.getString("equipamento"));
+                txtDefeito.setText(rs.getString("defeito"));
+                txtServico.setText(rs.getString("servico"));
+                txtTecnico.setText(rs.getString("tecnico"));
+                txtValorTotal.setText(rs.getString("valor"));
+                txtId.setText(rs.getString("idcli"));
+                //evitando problemas
+                btnAdicionar.setEnabled(false);
+                txtPesquisar.setEnabled(false);
+                tblClientes.setVisible(false);
+            }else{
+                JOptionPane.showMessageDialog(null, "OS não cadastrada");
+            }
+        } catch (java.sql.SQLSyntaxErrorException e) {
+            JOptionPane.showMessageDialog(null, "OS Inválida");
+        } catch (Exception e2){
+            JOptionPane.showMessageDialog(null, e2);
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -325,6 +365,11 @@ public class OsScreen extends javax.swing.JInternalFrame {
         btnConsultar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/read.png"))); // NOI18N
         btnConsultar.setToolTipText("Pesquisar");
         btnConsultar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnConsultar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConsultarActionPerformed(evt);
+            }
+        });
 
         btnEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/update.png"))); // NOI18N
         btnEditar.setToolTipText("Alterar");
@@ -460,13 +505,18 @@ public class OsScreen extends javax.swing.JInternalFrame {
 
     private void rdbOrdemServicoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbOrdemServicoActionPerformed
         // TODO add your handling code here:
-        tipo = "Ordem de serviço";
+        tipo = "OS";
     }//GEN-LAST:event_rdbOrdemServicoActionPerformed
 
     private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed
         // Chamando o método para emitir uma OS
         emitir_os();
     }//GEN-LAST:event_btnAdicionarActionPerformed
+
+    private void btnConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarActionPerformed
+        //Chama o método pesquisar_os
+        pesquisar_os();
+    }//GEN-LAST:event_btnConsultarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
