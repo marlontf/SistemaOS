@@ -44,6 +44,8 @@ public class OsScreen extends javax.swing.JInternalFrame {
     public void limpar_campos(){
         tblClientes.setModel(new DefaultTableModel());
         btnAdicionar.setEnabled(true);
+        txtPesquisar.setEnabled(true);
+        tblClientes.setVisible(true);
         txtNumeroOs.setText(null);
         txtData.setText(null);
         buttonGroup1.clearSelection();
@@ -85,14 +87,14 @@ public class OsScreen extends javax.swing.JInternalFrame {
     //método para cadastrar uma OS
     private void emitir_os(){
         if(!isEmptyTxtField(txtId) && !isEmptyTxtField(txtEquipamento) 
-                && !isEmptyTxtField(txtDefeito) 
+                && !isEmptyTxtField(txtDefeito) && !isEmptyTxtField(txtValorTotal)
                 && cbxSituacao.getSelectedIndex() != -1 && tipo != null){
             
             String sql = "insert into tbos (tipo, situacao, equipamento, "
                     + "defeito, servico, tecnico, valor, idcli) "
                     + "values(?,?,?,?,?,?,?,?)";
             try {
-                pst=conexao.prepareStatement(sql);
+                pst=conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 pst.setString(1, tipo);
                 pst.setString(2, cbxSituacao.getSelectedItem().toString());
                 pst.setString(3, txtEquipamento.getText());
@@ -102,8 +104,12 @@ public class OsScreen extends javax.swing.JInternalFrame {
                 pst.setString(7, txtValorTotal.getText().replace(",", "."));
                 pst.setInt(8, Integer.parseInt(txtId.getText()));
                 if(pst.executeUpdate() >0){
-                    JOptionPane.showMessageDialog(null, "OS emitida com sucesso");
+                    ResultSet rs2 = pst.getGeneratedKeys();
+                    if(rs2.next()){
+                        String os = rs2.getString(1);
+                        JOptionPane.showMessageDialog(null, "<html>OS nº: <b>"+os+"</b> emitida com sucesso</html>");
                     limpar_campos();
+                    }
                 }
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(this, e);
@@ -129,8 +135,10 @@ public class OsScreen extends javax.swing.JInternalFrame {
                 String rdbTipo = rs.getString("tipo");
                 if(rdbTipo.equals("OS")){
                     rdbOrdemServico.setSelected(true);
+                    tipo = "OS";
                 }else if(rdbTipo.equals("Orçamento")){
                     rdbOrcamento.setSelected(true);
+                    tipo = "Orçamento";
                 }
                 cbxSituacao.setSelectedItem(rs.getString("situacao"));
                 txtEquipamento.setText(rs.getString("equipamento"));
@@ -150,6 +158,36 @@ public class OsScreen extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(null, "OS Inválida");
         } catch (SQLException e2){
             JOptionPane.showMessageDialog(null, e2);
+        }
+    }
+    
+    private void alterar_os(){
+        if(!isEmptyTxtField(txtId) && !isEmptyTxtField(txtEquipamento) 
+                && !isEmptyTxtField(txtDefeito) && !isEmptyTxtField(txtValorTotal)
+                && cbxSituacao.getSelectedIndex() != -1 && tipo != null){
+            String sql = "update tbos set tipo=?, situacao=?, equipamento=?"
+                + ",defeito=?, servico=?, tecnico=?, valor=? where os=?";
+            try {
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, tipo);
+                pst.setString(2, cbxSituacao.getSelectedItem().toString());
+                pst.setString(3, txtEquipamento.getText());
+                pst.setString(4, txtDefeito.getText());
+                pst.setString(5, txtServico.getText());
+                pst.setString(6, txtTecnico.getText());
+                pst.setString(7, txtValorTotal.getText());
+                pst.setString(8, txtNumeroOs.getText());
+                if(pst.executeUpdate() > 0){
+                    JOptionPane.showMessageDialog(null, "Os alterada com "
+                            + "sucesso");
+                    limpar_campos();
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, e);
+            }
+        }else{
+            JOptionPane.showMessageDialog(null, "Preencha todos os campos "
+                    + "obrigatórios");
         }
     }
     
@@ -349,7 +387,7 @@ public class OsScreen extends javax.swing.JInternalFrame {
 
         lblTecnico.setText("Técnico");
 
-        lblValorTotal.setText("Valor Total:");
+        lblValorTotal.setText("Valor Total*");
 
         txtValorTotal.setText("0");
 
@@ -374,6 +412,11 @@ public class OsScreen extends javax.swing.JInternalFrame {
         btnEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/update.png"))); // NOI18N
         btnEditar.setToolTipText("Alterar");
         btnEditar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
 
         btnExcluir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/delete.png"))); // NOI18N
         btnExcluir.setToolTipText("Remover");
@@ -517,6 +560,11 @@ public class OsScreen extends javax.swing.JInternalFrame {
         //Chama o método pesquisar_os
         pesquisar_os();
     }//GEN-LAST:event_btnConsultarActionPerformed
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        //Chamando o método alterar_os
+        alterar_os();
+    }//GEN-LAST:event_btnEditarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
