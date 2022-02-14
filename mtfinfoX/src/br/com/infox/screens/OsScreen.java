@@ -107,7 +107,7 @@ public class OsScreen extends javax.swing.JInternalFrame {
                     ResultSet rs2 = pst.getGeneratedKeys();
                     if(rs2.next()){
                         String os = rs2.getString(1);
-                        JOptionPane.showMessageDialog(null, "<html>OS nº: <b>"+os+"</b> emitida com sucesso</html>");
+                        JOptionPane.showMessageDialog(null, "<html>OS nº: <b style='color:red'>"+os+"</b> emitida com sucesso</html>");
                     limpar_campos();
                     }
                 }
