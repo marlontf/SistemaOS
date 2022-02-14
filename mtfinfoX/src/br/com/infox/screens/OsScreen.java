@@ -105,7 +105,7 @@ public class OsScreen extends javax.swing.JInternalFrame {
                     JOptionPane.showMessageDialog(null, "OS emitida com sucesso");
                     limpar_campos();
                 }
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 JOptionPane.showMessageDialog(this, e);
             }
         }else{
@@ -148,7 +148,7 @@ public class OsScreen extends javax.swing.JInternalFrame {
             }
         } catch (java.sql.SQLSyntaxErrorException e) {
             JOptionPane.showMessageDialog(null, "OS Inválida");
-        } catch (Exception e2){
+        } catch (SQLException e2){
             JOptionPane.showMessageDialog(null, e2);
         }
     }
