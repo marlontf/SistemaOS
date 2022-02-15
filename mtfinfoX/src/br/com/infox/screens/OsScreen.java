@@ -114,13 +114,8 @@ public class OsScreen extends javax.swing.JInternalFrame {
                 if (pst.executeUpdate() > 0) {
                     ResultSet rs2 = pst.getGeneratedKeys();
                     if (rs2.next()) {
-                        String os = rs2.getString(1);
+                        String os = rs2.getString(1);                        
                         JOptionPane.showMessageDialog(null, "<html>OS nº: <b style='color:red'>" + os + "</b> emitida com sucesso</html>");
-                        btnAdicionar.setEnabled(false);
-                        btnEditar.setEnabled(true);
-                        btnExcluir.setEnabled(true);
-                        btnImprimir.setEnabled(true);
-                        tblClientes.setVisible(false);
                         pesquisar_os(os);
                     }
                 }
@@ -132,16 +127,22 @@ public class OsScreen extends javax.swing.JInternalFrame {
         }
 
     }
+
+    //criando uma sobrecarga caso o parâmetro não seja repassado
+    private void pesquisar_os(){
+        this.pesquisar_os(null);
+    }
     
-    private void pesquisar_os(String ...os) {
+    //Função completa
+    private void pesquisar_os(String os) {
         String num_os = null;
-        //verifica se a OS foi passada por parâmetro
-        if(os.length >0){
-            num_os = os[0];
+        if (os != null){
+            num_os = os;
         }else{
             //a linha abaixo cria uma caixa de entrada do tipo JOption Pane
             num_os = JOptionPane.showInputDialog("Número da OS");
-        } 
+        }
+        
         String sql = "select * from vw_tbos where os = " + num_os;
         if (num_os != null) {
             try {
