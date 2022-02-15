@@ -191,6 +191,26 @@ public class OsScreen extends javax.swing.JInternalFrame {
         }
     }
     
+    private void excluir_os(){
+        int confirma = JOptionPane.showConfirmDialog(null,"Tem certeza que deseja excluir esta OS?","Atenção", JOptionPane.YES_NO_OPTION);
+        if(confirma == JOptionPane.YES_OPTION){
+            try {
+                String sql = "delete from tbos where os=?";
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtNumeroOs.getText());
+                if (pst.executeUpdate() > 0){
+                    JOptionPane.showMessageDialog(null, "OS Excluída com sucesso");
+                    limpar_campos();
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, e);
+            }
+            
+            
+        }
+        
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -421,6 +441,11 @@ public class OsScreen extends javax.swing.JInternalFrame {
         btnExcluir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/delete.png"))); // NOI18N
         btnExcluir.setToolTipText("Remover");
         btnExcluir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnExcluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExcluirActionPerformed(evt);
+            }
+        });
 
         btnImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/print.png"))); // NOI18N
         btnImprimir.setToolTipText("Imprimir");
@@ -565,6 +590,11 @@ public class OsScreen extends javax.swing.JInternalFrame {
         //Chamando o método alterar_os
         alterar_os();
     }//GEN-LAST:event_btnEditarActionPerformed
+
+    private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
+        //chama o método excluir_os
+        excluir_os();
+    }//GEN-LAST:event_btnExcluirActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
