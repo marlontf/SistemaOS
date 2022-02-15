@@ -1,6 +1,25 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ * The MIT License
+ *
+ * Copyright 2022 Marlon Tavares.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 package br.com.infox.screens;
 
@@ -10,8 +29,10 @@ import java.sql.*;
 import javax.swing.JOptionPane;
 
 /**
+ * Tela de Login
  *
- * @author Marlon
+ * @author Marlon Tavares
+ * @version 1.0
  */
 public class LoginScreen extends javax.swing.JFrame {
 
@@ -19,21 +40,34 @@ public class LoginScreen extends javax.swing.JFrame {
     PreparedStatement pst = null;
     ResultSet rs = null;
 
+    /**
+     * Cria uma nova tela LoginScreen com verificação de conexão com o banco
+     * de dados
+     */
+    public LoginScreen() {
+        initComponents();
+        conexao = ConnectionModule.conector();
+        if (conexao != null) {
+            lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/dbok.png")));
+        } else {
+            lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/dberror.png")));
+        }
+    }
+    
+    /**
+     * Realiza a verificação da identidade inserida. Caso passe no teste
+     * redireciona para a tela principal
+     */
     public void login() {
         String sql = "select * from tbusuarios where login=? and senha=?";
         try {
             pst = conexao.prepareStatement(sql);
-            //Capturando variáveis do formulário
             pst.setString(1, txtUsuario.getText());
             pst.setString(2, new String(txtSenha.getPassword()));
-            //Executando a query();
             rs = pst.executeQuery();
-            //se existir usuário e senha
             if (rs.next()) {
-                //a linha abaixo obtem o conteúdo do campo perfil da tabela tbusuarios
                 String perfil = rs.getString("perfil");
                 String usuario = rs.getString("usuario");
-                //a estrutura abaixo faz o tratamento do perfil do usuário
                 MainScreen main = new MainScreen();
                 if(perfil.equals("admin")){
                     main.menRel.setEnabled(true);
@@ -45,27 +79,11 @@ public class LoginScreen extends javax.swing.JFrame {
                 this.dispose();
                 conexao.close();
             } else {
-                JOptionPane.showMessageDialog(this, "Usuário e/ou senha inválido(s)");
+                JOptionPane.showMessageDialog(this, "Usuário e/ou senha "
+                        + "inválido(s)");
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e);
-        }
-    }
-
-    /**
-     * Creates new form TelaLogin
-     */
-    public LoginScreen() {
-        initComponents();
-        conexao = ConnectionModule.conector();
-        //a linha abaixo serve de apoio ao status da conexão
-        //System.out.println(conexao);
-        if (conexao != null) {
-            //Set image dbok;
-            lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/dbok.png")));
-        } else {
-            //Set image dberror
-            lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/dberror.png")));
         }
     }
 
@@ -149,6 +167,10 @@ public class LoginScreen extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Chama o método login()
+     * @param evt 
+     */
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         //chamando o método login()
         login();

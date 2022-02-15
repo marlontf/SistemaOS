@@ -1,13 +1,31 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ * The MIT License
+ *
+ * Copyright 2022 Marlon Tavares.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 package br.com.infox.screens;
 
 import br.com.infox.dal.ConnectionModule;
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.Locale;
 import javax.swing.JOptionPane;
 import java.sql.*;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -15,14 +33,16 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
 
 /**
+ * Tela principal
  *
- * @author marlon
+ * @author Marlon Tavares
+ * @version 1.0
  */
 public class MainScreen extends javax.swing.JFrame {
 
     Connection conexao = null;
     /**
-     * Creates new form MainScreen
+     * Cria uma nova Tela Principal
      */
     public MainScreen() {
         initComponents();
@@ -199,15 +219,18 @@ public class MainScreen extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Realiza a impressão do relatório de serviços
+     * @param evt 
+     */
     private void menRelServActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menRelServActionPerformed
-        //gerando um relatório de serviços
-        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressão deste relatório?", "Atenção", JOptionPane.YES_NO_OPTION);
+        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a "
+                + "impressão deste relatório?", "Atenção", JOptionPane.YES_NO_OPTION);
         if(confirma == JOptionPane.YES_OPTION){
-            //imprimindo relatório com o framework JasperReport
             try {
-                //Usando a classe JasperPrint para preparar a impressão de um relatório
-                JasperPrint print = JasperFillManager.fillReport("C:\\Users\\marlon\\Documents\\development\\Java\\sistemaos\\reports\\servicos.jasper",null,conexao);
-                //A linha abaixo exibe o relatório através da classe JasperViewer
+                JasperPrint print = JasperFillManager.fillReport("C:\\Users"
+                        + "\\marlon\\Documents\\development\\Java\\sistemaos"
+                        + "\\reports\\servicos.jasper",null,conexao);
                 JasperViewer.viewReport(print, false);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, e);
@@ -215,29 +238,43 @@ public class MainScreen extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_menRelServActionPerformed
 
+    /**
+     * Chama a tela de informações sobre o aplicativo
+     * @param evt 
+     */
     private void menAjuSobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menAjuSobActionPerformed
-        // Chamando a tela sobre
         new AboutScreen().setVisible(true);
     }//GEN-LAST:event_menAjuSobActionPerformed
 
+    /**
+     * Captura a data e o nome do usuário e insere na tela principal 
+     * ao terminar da geraçãop da mesma
+     * @param evt 
+     */
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
-        // As linhas abaixo substituem a label Data pela data atual do sistema
         Date data = new Date();
         DateFormat formatador = DateFormat.getDateInstance(DateFormat.SHORT);
         lblData.setText(formatador.format(data));
     }//GEN-LAST:event_formWindowActivated
 
+    /**
+     * Abre uma tela de confirmação se deseja sair do sistema
+     * @param evt 
+     */
     private void menOpcSaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menOpcSaiActionPerformed
-        // Exibir uma caixa de diálogo ao sair
-        int sair = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja sair?","Atenção",JOptionPane.YES_NO_OPTION);
+        int sair = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja"
+                + " sair?","Atenção",JOptionPane.YES_NO_OPTION);
         if (sair == JOptionPane.YES_OPTION){
         System.exit(0);
 }
 
     }//GEN-LAST:event_menOpcSaiActionPerformed
 
+    /**
+     * Gera uma nova tela de gerenciamento de usuário - UserScreen
+     * @param evt 
+     */
     private void menCadUsuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCadUsuActionPerformed
-        //as linhas abaixo irão abrir o form UserScreen dentro do Desktop pane
         UserScreen user = new UserScreen();
         user.setVisible(true);
         desktop.add(user);
@@ -245,8 +282,11 @@ public class MainScreen extends javax.swing.JFrame {
         user.toFront();
     }//GEN-LAST:event_menCadUsuActionPerformed
 
+    /**
+     * Gera uma nova tela de gerenciamento de cliente - ClientScreen
+     * @param evt 
+     */
     private void menCadCliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCadCliActionPerformed
-        //as linhas abaixo irão abrir o form UserScreen dentro do Desktop pane
         ClientScreen client = new ClientScreen();
         client.setVisible(true);
         desktop.add(client);
@@ -254,8 +294,11 @@ public class MainScreen extends javax.swing.JFrame {
         client.toFront();
     }//GEN-LAST:event_menCadCliActionPerformed
 
+    /**
+     * Gera uma nova tela de gerenciamento de OS - OsScreen
+     * @param evt 
+     */
     private void menCadOSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCadOSActionPerformed
-        //as linhas abaixo irão abrir o form OsScreen dentro do Desktop pane
         OsScreen os = new OsScreen();
         os.setVisible(true);
         desktop.add(os);
@@ -263,15 +306,19 @@ public class MainScreen extends javax.swing.JFrame {
         os.toFront();
     }//GEN-LAST:event_menCadOSActionPerformed
 
+    /**
+     * Realiza a impressão do relatório de clientes
+     * @param evt 
+     */
     private void menRelCliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menRelCliActionPerformed
-        //gerando um relatório de clientes
-        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressão deste relatório?", "Atenção", JOptionPane.YES_NO_OPTION);
+        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a "
+                + "impressão deste relatório?", "Atenção", 
+                JOptionPane.YES_NO_OPTION);
         if(confirma == JOptionPane.YES_OPTION){
-            //imprimindo relatório com o framework JasperReport
             try {
-                //Usando a classe JasperPrint para preparar a impressão de um relatório
-                JasperPrint print = JasperFillManager.fillReport("C:\\Users\\marlon\\Documents\\development\\Java\\sistemaos\\reports\\clientes.jasper",null,conexao);
-                //A linha abaixo exibe o relatório através da classe JasperViewer
+                JasperPrint print = JasperFillManager.fillReport("C:\\Users"
+                        + "\\marlon\\Documents\\development\\Java\\sistemaos"
+                        + "\\reports\\clientes.jasper",null,conexao);
                 JasperViewer.viewReport(print, false);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, e);

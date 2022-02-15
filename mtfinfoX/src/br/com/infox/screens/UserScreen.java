@@ -1,6 +1,25 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
+ * The MIT License
+ *
+ * Copyright 2022 Marlon Tavares.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 package br.com.infox.screens;
 
@@ -11,9 +30,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 /**
- * User Screen
+ * Tela de gerenciamento de usuários
  *
- * @author marlon
+ * @author Marlon Tavares
+ * @version 1.0
  */
 public class UserScreen extends javax.swing.JInternalFrame {
 
@@ -21,12 +41,17 @@ public class UserScreen extends javax.swing.JInternalFrame {
     PreparedStatement pst = null;
     ResultSet rs = null;
 
+    /**
+     * Cria uma nova tela para gerenciamento de usuários
+     */
     public UserScreen() {
         initComponents();
         conexao = ConnectionModule.conector();
     }
 
-    //método para consultar usuário
+    /**
+     * Realiza a consulta de um usuário baseado no ID
+     */
     private void consultar() {
         String sql = "select * from tbusuarios where iduser = ?";
 
@@ -39,7 +64,6 @@ public class UserScreen extends javax.swing.JInternalFrame {
                 txtTelefone.setText(rs.getString("fone"));
                 txtLogin.setText(rs.getString("login"));
                 txtSenha.setText(rs.getString("senha"));
-                //a linha abaixo se refere ao combobox
                 cbPerfil.setSelectedItem(rs.getString("perfil"));
             } else {
                 JOptionPane.showMessageDialog(null, "Usuário não cadastrado");
@@ -55,6 +79,11 @@ public class UserScreen extends javax.swing.JInternalFrame {
 
     }
 
+    /**
+     * Verifica se o campo de texto indicado por parâmetro está vazio
+     * @param textField
+     * @return boolean
+     */
     private boolean isEmpty(JTextField textField) {
         if (textField.getText().isBlank()) {
             textField.setText("");
@@ -65,10 +94,17 @@ public class UserScreen extends javax.swing.JInternalFrame {
         }
     }
 
-    //método para adicionar usuário
+    /**
+     * Realiza a inserção de um novo usuário
+     */
     private void adicionar() {
-        if (!isEmpty(txtId) && !isEmpty(txtNome) && !isEmpty(txtLogin) && !isEmpty(txtSenha) && cbPerfil.getSelectedIndex() != -1) {
-            String sql = "Insert into tbusuarios (iduser, usuario, fone, login, senha, perfil) values (?,?,?,?,?,?)";
+        if (!isEmpty(txtId) 
+                && !isEmpty(txtNome) 
+                && !isEmpty(txtLogin) 
+                && !isEmpty(txtSenha) 
+                && cbPerfil.getSelectedIndex() != -1) {
+            String sql = "Insert into tbusuarios (iduser, usuario, fone, "
+                    + "login, senha, perfil) values (?,?,?,?,?,?)";
             try {
                 pst = conexao.prepareStatement(sql);
                 pst.setString(1, txtId.getText());
@@ -77,13 +113,13 @@ public class UserScreen extends javax.swing.JInternalFrame {
                 pst.setString(4, txtLogin.getText());
                 pst.setString(5, new String(txtSenha.getPassword()));
                 pst.setString(6, (String) cbPerfil.getSelectedItem());
-                //a linha abaixo insere os dados na tabela de usuários
                 if (pst.executeUpdate() != 0) {
-                    JOptionPane.showMessageDialog(null, "Usuário cadastrado com sucesso");
+                    JOptionPane.showMessageDialog(null, "Usuário cadastrado "
+                            + "com sucesso");
                 } else {
-                    JOptionPane.showMessageDialog(null, "Houve um erro com o cadastro");
+                    JOptionPane.showMessageDialog(null, "Houve um erro com o "
+                            + "cadastro");
                 }
-                //Limpando dados dos campos
                 txtId.setText(null);
                 txtId.requestFocus();
                 txtNome.setText(null);
@@ -95,14 +131,22 @@ public class UserScreen extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(null, e);
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios");
+            JOptionPane.showMessageDialog(null, "Preencha todos os campos "
+                    + "obrigatórios");
         }
     }
 
-    //método para alterar dados do usuário
+    /**
+     * Realiza a alteração (Update) de um usuário com base no ID
+     */
     private void alterar() {
-        if (!isEmpty(txtId) && !isEmpty(txtNome) && !isEmpty(txtLogin) && !isEmpty(txtSenha) && cbPerfil.getSelectedIndex() != -1) {
-            String sql = "update tbusuarios set usuario=?, fone=?, login=?, senha=?, perfil=? where iduser=?";
+        if (!isEmpty(txtId) 
+                && !isEmpty(txtNome) 
+                && !isEmpty(txtLogin) 
+                && !isEmpty(txtSenha) 
+                && cbPerfil.getSelectedIndex() != -1) {
+            String sql = "update tbusuarios set usuario=?, fone=?, login=?, "
+                    + "senha=?, perfil=? where iduser=?";
             try {
                 pst = conexao.prepareStatement(sql);
                 pst.setString(1, txtNome.getText());
@@ -111,7 +155,6 @@ public class UserScreen extends javax.swing.JInternalFrame {
                 pst.setString(4, new String(txtSenha.getPassword()));
                 pst.setString(5, (String) cbPerfil.getSelectedItem());
                 pst.setString(6, txtId.getText());
-                //a linha abaixo insere os dados na tabela de usuários
                 if (pst.executeUpdate() != 0) {
                     txtId.setText(null);
                     txtId.requestFocus();
@@ -120,22 +163,29 @@ public class UserScreen extends javax.swing.JInternalFrame {
                     txtLogin.setText(null);
                     txtSenha.setText(null);
                     cbPerfil.setSelectedIndex(-1);
-                    JOptionPane.showMessageDialog(null, "Dados do usuário alterados com sucesso");
+                    JOptionPane.showMessageDialog(null, "Dados do usuário "
+                            + "alterados com sucesso");
                 } else {
-                    JOptionPane.showMessageDialog(null, "Houve um erro com alteração");
+                    JOptionPane.showMessageDialog(null, "Houve um erro com "
+                            + "alteração");
                 }
             } catch (HeadlessException | SQLException e) {
                 JOptionPane.showMessageDialog(null, e);
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios");
+            JOptionPane.showMessageDialog(null, "Preencha todos os campos "
+                    + "obrigatórios");
         }
 
     }
 
-    //método para remover dados de usuário
+    /**
+     * Realiza a remoção de um usuário com base no ID
+     */
     private void remover() {
-        int confirmar = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover este usuário?", "Atenção", JOptionPane.YES_NO_OPTION);
+        int confirmar = JOptionPane.showConfirmDialog(null, "Tem certeza que "
+                + "deseja remover este usuário?", "Atenção", 
+                JOptionPane.YES_NO_OPTION);
         if (confirmar == JOptionPane.YES_OPTION) {
             try {
                 String sql = "delete from tbusuarios where iduser=?";
@@ -149,7 +199,8 @@ public class UserScreen extends javax.swing.JInternalFrame {
                     txtLogin.setText(null);
                     txtSenha.setText(null);
                     cbPerfil.setSelectedIndex(-1);
-                    JOptionPane.showMessageDialog(null, "Exclusão realizada com sucesso");
+                    JOptionPane.showMessageDialog(null, "Exclusão realizada "
+                            + "com sucesso");
                 }
             } catch (SQLException e) {
                 JOptionPane.showConfirmDialog(this, e);
@@ -335,28 +386,43 @@ public class UserScreen extends javax.swing.JInternalFrame {
         setBounds(0, 0, 640, 480);
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Chama o evento consultar()
+     * @param evt 
+     */
     private void btnReadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReadActionPerformed
-        //realiza a consulta
         consultar();
     }//GEN-LAST:event_btnReadActionPerformed
 
+    /**
+     * Chama o evento adicioanr()
+     * @param evt 
+     */
     private void btnCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateActionPerformed
-        //realiza o insert
         adicionar();
     }//GEN-LAST:event_btnCreateActionPerformed
 
+    /**
+     * Direciona o cursor para o campo de ID quando o formulário ganha foco
+     * @param evt 
+     */
     private void formFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_formFocusGained
-        //Setando foco para o campo ID
         txtId.requestFocus();
     }//GEN-LAST:event_formFocusGained
 
+    /**
+     * Chama o método alterar()
+     * @param evt 
+     */
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
-        //realiza a alteração
         alterar();
     }//GEN-LAST:event_btnUpdateActionPerformed
 
+    /**
+     * Chama o método remover()
+     * @param evt 
+     */
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        //realiza a exclusão
         remover();
     }//GEN-LAST:event_btnDeleteActionPerformed
 

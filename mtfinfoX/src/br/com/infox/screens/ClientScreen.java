@@ -1,6 +1,25 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
+ * The MIT License
+ *
+ * Copyright 2022 Marlon Tavares.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 package br.com.infox.screens;
 
@@ -10,13 +29,13 @@ import java.awt.HeadlessException;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
-
-//A linha abaixo importa recursos da biblioteca rs2xml.jar
 import net.proteanit.sql.DbUtils;
 
 /**
+ * Tela de gerenciamento de clientes
  *
- * @author Marlon
+ * @author Marlon Tavares
+ * @version 1.0
  */
 public class ClientScreen extends javax.swing.JInternalFrame {
 
@@ -25,13 +44,18 @@ public class ClientScreen extends javax.swing.JInternalFrame {
     ResultSet rs;
 
     /**
-     * Creates new form ClientScreen
+     * Cria uma nova tela para gerenciamento de clientes
      */
     public ClientScreen() {
         initComponents();
         conexao = ConnectionModule.conector();
     }
-
+    
+    /**
+     * Verifica se o campo de texto indicado por parâmetro está vazio
+     * @param textField
+     * @return boolean
+     */
     private boolean isEmpty(JTextField textField) {
         if (textField.getText().isBlank()) {
             textField.setText("");
@@ -42,6 +66,9 @@ public class ClientScreen extends javax.swing.JInternalFrame {
         }
     }
 
+    /**
+     * Realiza a insersão de um novo cliente no banco de dados
+     */
     private void adicionar() {
         if (!isEmpty(txtNome) && !isEmpty(txtTelefone)) {
             String sql = "Insert into tbclientes (nomecli, endcli, fonecli,"
@@ -52,7 +79,6 @@ public class ClientScreen extends javax.swing.JInternalFrame {
                 pst.setString(2, txtEndereco.getText());
                 pst.setString(3, txtTelefone.getText());
                 pst.setString(4, txtEmail.getText());
-                //a linha abaixo insere os dados na tabela de usuários
                 if (pst.executeUpdate() != 0) {
                     JOptionPane.showMessageDialog(null, "Cliente cadastrado com"
                             + " sucesso");
@@ -60,7 +86,6 @@ public class ClientScreen extends javax.swing.JInternalFrame {
                     JOptionPane.showMessageDialog(null, "Houve um erro com o"
                             + " cadastro");
                 }
-                //Limpando dados dos campos
                 limpar_campos();
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(null, e);
@@ -71,17 +96,18 @@ public class ClientScreen extends javax.swing.JInternalFrame {
         }
     }
 
-    //método para pesquisar clientes pelo nome com filtro
+    /**
+     * realiza a pesquisa de clientes no banco de dados com base no nome
+     */
     private void pesquisar_cliente() {
         if(!txtPesquisar.getText().isBlank()){
             try {
-                String sql = "select idcli Id, nomecli Nome, endcli Endereço,fonecli Telefone, emailcli Email from tbclientes where nomecli like ? limit 20";
+                String sql = "select idcli Id, nomecli Nome, endcli Endereço,"
+                        + "fonecli Telefone, emailcli Email from tbclientes "
+                        + "where nomecli like ? limit 20";
                 pst = conexao.prepareStatement(sql);
-                //passando o conteúdo da caixa de pesquisa para o ?
-                //atenção para o "%" - continuação da string sql
                 pst.setString(1, txtPesquisar.getText() + "%");
                 rs = pst.executeQuery();
-                //a linha abaixo usa a biblioteca rs2xml.jar para preencher a tabela
                 tblClientes.setModel(DbUtils.resultSetToTableModel(rs));
                 tblClientes.setDefaultEditor(Object.class, null);
                 tblClientes.getTableHeader().setReorderingAllowed(false);
@@ -96,7 +122,10 @@ public class ClientScreen extends javax.swing.JInternalFrame {
         
     }
 
-    //método para setar os campos do formulário com o conteúdo da tabela
+    /**
+     * Preenche campos "Para edição ou exclusão" ao clicar em um cliente
+     * selecionado na tabela de pesquisa
+     */
     public void setar_campos() {
         int setar = tblClientes.getSelectedRow();
         txtNome.setText(tblClientes.getModel().getValueAt(setar, 1).toString());
@@ -106,14 +135,20 @@ public class ClientScreen extends javax.swing.JInternalFrame {
         btnCadastrar.setEnabled(false);
     }
 
+    /**
+     * Realiza a alteração no banco de dados à partir do ID do cliente
+     * selecinado na tabela de pesquisa
+     */
     private void alterar() {
         int setar = 0;
         if(tblClientes.getSelectedRow() != -1){
-            setar = (int)tblClientes.getModel().getValueAt(tblClientes.getSelectedRow(), 0);
+            setar = (int)tblClientes.getModel().getValueAt(tblClientes.
+                    getSelectedRow(), 0);
         }
         
         if (!isEmpty(txtNome) && !isEmpty(txtTelefone)) {
-            String sql = "update tbclientes set nomecli=?, endcli=?, fonecli=?, emailcli=? where idcli = ?";
+            String sql = "update tbclientes set nomecli=?, endcli=?, fonecli=?,"
+                    + " emailcli=? where idcli = ?";
             try {
                 pst = conexao.prepareStatement(sql);
                 pst.setString(1, txtNome.getText());
@@ -121,34 +156,44 @@ public class ClientScreen extends javax.swing.JInternalFrame {
                 pst.setString(3, txtTelefone.getText());
                 pst.setString(4, txtEmail.getText());
                 pst.setInt(5, setar);
-                //a linha abaixo insere os dados na tabela de usuários
                 if (pst.executeUpdate() != 0) {
                     
-                    JOptionPane.showMessageDialog(null, "Dados do cliente alterados com sucesso");
+                    JOptionPane.showMessageDialog(null, "Dados do cliente "
+                            + "alterados com sucesso");
                     limpar_campos();
                 } else {
-                    JOptionPane.showMessageDialog(null, "Houve um erro com alteração");
+                    JOptionPane.showMessageDialog(null, "Houve um erro com "
+                            + "alteração");
                 }
             } catch (HeadlessException | SQLException e) {
                 JOptionPane.showMessageDialog(null, e);
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios");
+            JOptionPane.showMessageDialog(null, "Preencha todos os campos "
+                    + "obrigatórios");
         }
 
     }
 
+    /**
+     * Realiza a remoção de uma linha no banco de dados à partir do ID 
+     * do cliente selecinado na tabela de pesquisa
+     */
     private void remover() {
         if(tblClientes.getSelectedRow() != -1){
-            int setar = (int)tblClientes.getModel().getValueAt(tblClientes.getSelectedRow(), 0);
-            int confirmar = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover este usuário?", "Atenção", JOptionPane.YES_NO_OPTION);
+            int setar = (int)tblClientes.getModel().getValueAt(tblClientes.
+                    getSelectedRow(), 0);
+            int confirmar = JOptionPane.showConfirmDialog(null, "Tem certeza "
+                    + "que deseja remover este usuário?", "Atenção", 
+                    JOptionPane.YES_NO_OPTION);
             if (confirmar == JOptionPane.YES_OPTION) {
                 try {
                     String sql = "delete from tbclientes where idcli=?";
                     pst = conexao.prepareStatement(sql);
                     pst.setInt(1, setar);
                     if (pst.executeUpdate() != 0) {
-                        JOptionPane.showMessageDialog(null, "Exclusão realizada com sucesso");
+                        JOptionPane.showMessageDialog(null, "Exclusão realizada"
+                                + " com sucesso");
                         limpar_campos();
                     }
                 } catch (SQLException e) {
@@ -156,11 +201,16 @@ public class ClientScreen extends javax.swing.JInternalFrame {
                 }
             }
         }else{
-            JOptionPane.showMessageDialog(null, "Pesquise e selecione um cliente antes da exclusão");
+            JOptionPane.showMessageDialog(null, "Pesquise e selecione um "
+                    + "cliente antes da exclusão");
         }
         
     }
     
+    /**
+     * Limpa os campos JTextField, reseta o TableModel para Default e ativa
+     * o botão de cadastro
+     */
     private void limpar_campos(){
         txtNome.setText(null);
         txtEndereco.setText(null);
@@ -355,32 +405,51 @@ public class ClientScreen extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Chama o método adicionar()
+     * @param evt 
+     */
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
-        //Chama a função de adicinar cadastro
         adicionar();
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
+    /**
+     * Chama o método pesquisar_cliente()
+     * @param evt 
+     */
     private void txtPesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPesquisarKeyReleased
         pesquisar_cliente();
     }//GEN-LAST:event_txtPesquisarKeyReleased
 
+    /**
+     * Chama o método setar_campos()
+     * @param evt 
+     */
     private void tblClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblClientesMouseClicked
-        //chamando o método para setar os campos
         setar_campos();
     }//GEN-LAST:event_tblClientesMouseClicked
 
+    /**
+     * Chama o método alterar()
+     * @param evt 
+     */
     private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
-        //chama o método para alteração do cliente
         alterar();
     }//GEN-LAST:event_btnAlterarActionPerformed
 
+    /**
+     * Chama o método remover()
+     * @param evt 
+     */
     private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
-        //chama o método de remoção
         remover();
     }//GEN-LAST:event_btnExcluirActionPerformed
 
+    /**
+     * Seta o foco no campo txtPesquisar quando o formulário receber o foco
+     * @param evt 
+     */
     private void formFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_formFocusGained
-        //Setar foco no campo de pesquisa
         txtPesquisar.requestFocus();
     }//GEN-LAST:event_formFocusGained
 

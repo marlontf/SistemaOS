@@ -1,6 +1,25 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
+ * The MIT License
+ *
+ * Copyright 2022 Marlon Tavares.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 package br.com.infox.screens;
 
@@ -16,24 +35,31 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
 
 /**
+ * Tela de gerenciamentod e OS
  *
- * @author Marlon
+ * @author Marlon Tavares
+ * @version 1.0
  */
 public class OsScreen extends javax.swing.JInternalFrame {
 
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
-
-    //a linha abaixo cria uma variável para armazenar o texto de acordo com o
-    //radiobutton selecionado
     private String tipo = null;
 
+    /**
+     * Cria uma nova tela para gerenciamento de OS
+     */
     public OsScreen() {
         initComponents();
         conexao = ConnectionModule.conector();
     }
 
+    /**
+     * Verifica se o campo de texto indicado por parâmetro está vazio
+     * @param textField
+     * @return boolean
+     */
     public boolean isEmptyTxtField(JTextField textField) {
         if (textField.getText().isBlank()) {
             textField.requestFocus();
@@ -43,15 +69,18 @@ public class OsScreen extends javax.swing.JInternalFrame {
         }
     }
 
+    /**
+     * Desabilita os botões de Editar, Excluir e Imprimir
+     * Habilita o botões de Adicionar e o campo de Pesquisa de cliente
+     * Limpa os campos do formulário
+     * Ativa a tabela de pesquisa
+     */
     public void limpar_campos() {
-        //desabilitar botões
         btnEditar.setEnabled(false);
         btnExcluir.setEnabled(false);
         btnImprimir.setEnabled(false);
-        //habilitar botões
         btnAdicionar.setEnabled(true);
         txtPesquisar.setEnabled(true);
-        //limpar campos
         tblClientes.setModel(new DefaultTableModel());
         txtPesquisar.setText(null);
         txtId.setText(null);
@@ -68,6 +97,10 @@ public class OsScreen extends javax.swing.JInternalFrame {
         txtValorTotal.setText("0.00");
     }
 
+    /**
+     * Realiza pesquisa de cliente para iserção na OS com base no nome
+     * informado, limitando a 20 linhas de resultado
+     */
     private void pesquisar_cliente() {
         if (!txtPesquisar.getText().isBlank()) {
             String sql = "Select idcli Id, nomecli Nome, fonecli Fone from "
@@ -86,23 +119,32 @@ public class OsScreen extends javax.swing.JInternalFrame {
         }
     }
 
+    /**
+     * Realiza a seleção do ID do cliente para a OS
+     */
     private void setar_campos() {
         int setar = tblClientes.getSelectedRow();
         txtId.setText(tblClientes.getModel().getValueAt(setar, 0)
                 .toString());
     }
 
-    //método para cadastrar uma OS
+    /**
+     * Realiza a inserção da OS informada no banco de dados
+     */
     private void emitir_os() {
-        if (!isEmptyTxtField(txtId) && !isEmptyTxtField(txtEquipamento)
-                && !isEmptyTxtField(txtDefeito) && !isEmptyTxtField(txtValorTotal)
-                && cbxSituacao.getSelectedIndex() != -1 && tipo != null) {
+        if (!isEmptyTxtField(txtId) 
+                && !isEmptyTxtField(txtEquipamento)
+                && !isEmptyTxtField(txtDefeito) 
+                && !isEmptyTxtField(txtValorTotal) 
+                && cbxSituacao.getSelectedIndex() != -1 
+                && tipo != null) {
 
             String sql = "insert into tbos (tipo, situacao, equipamento, "
                     + "defeito, servico, tecnico, valor, idcli) "
                     + "values(?,?,?,?,?,?,?,?)";
             try {
-                pst = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                pst = conexao.prepareStatement(sql, 
+                        Statement.RETURN_GENERATED_KEYS);
                 pst.setString(1, tipo);
                 pst.setString(2, cbxSituacao.getSelectedItem().toString());
                 pst.setString(3, txtEquipamento.getText());
@@ -115,7 +157,9 @@ public class OsScreen extends javax.swing.JInternalFrame {
                     ResultSet rs2 = pst.getGeneratedKeys();
                     if (rs2.next()) {
                         String os = rs2.getString(1);                        
-                        JOptionPane.showMessageDialog(null, "<html>OS nº: <b style='color:red'>" + os + "</b> emitida com sucesso</html>");
+                        JOptionPane.showMessageDialog(null, "<html>OS nº: "
+                                + "<b style='color:red'>" + os 
+                                + "</b> emitida com sucesso</html>");
                         pesquisar_os(os);
                     }
                 }
@@ -123,23 +167,29 @@ public class OsScreen extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(this, e);
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Preencha todos os campos requeridos");
+            JOptionPane.showMessageDialog(null, "Preencha todos os "
+                    + "campos requeridos");
         }
 
     }
 
-    //criando uma sobrecarga caso o parâmetro não seja repassado
+    /**
+     * Cria uma sobrecarga da função pesquisar_os() caso o parâmetro não
+     * tenha sido informado na chamada do método
+     */
     private void pesquisar_os(){
         this.pesquisar_os(null);
     }
     
-    //Função completa
+    /**
+     * Realiza a pesquisa de OS no banco de dados com base no número da OS
+     * @param os 
+     */
     private void pesquisar_os(String os) {
         String num_os = null;
         if (os != null){
             num_os = os;
         }else{
-            //a linha abaixo cria uma caixa de entrada do tipo JOption Pane
             num_os = JOptionPane.showInputDialog("Número da OS");
         }
         
@@ -151,7 +201,6 @@ public class OsScreen extends javax.swing.JInternalFrame {
                 if (rs.next()) {
                     txtNumeroOs.setText(rs.getString("os"));
                     txtData.setText(rs.getString("data_os"));
-                    //setando os radio buttons
                     String rdbTipo = rs.getString("tipo");
                     if (rdbTipo.equals("OS")) {
                         rdbOrdemServico.setSelected(true);
@@ -167,7 +216,6 @@ public class OsScreen extends javax.swing.JInternalFrame {
                     txtTecnico.setText(rs.getString("tecnico"));
                     txtValorTotal.setText(rs.getString("valor"));
                     txtId.setText(rs.getString("idcli"));
-                    //evitando problemas
                     btnAdicionar.setEnabled(false);
                     tblClientes.setVisible(false);
                     btnEditar.setEnabled(true);
@@ -186,10 +234,17 @@ public class OsScreen extends javax.swing.JInternalFrame {
 
     }
 
+    /**
+     * Realiza a alteração (Update) de uma OS no banco de dados com base no
+     * número da OS
+     */
     private void alterar_os() {
-        if (!isEmptyTxtField(txtId) && !isEmptyTxtField(txtEquipamento)
-                && !isEmptyTxtField(txtDefeito) && !isEmptyTxtField(txtValorTotal)
-                && cbxSituacao.getSelectedIndex() != -1 && tipo != null) {
+        if (!isEmptyTxtField(txtId) 
+                && !isEmptyTxtField(txtEquipamento)
+                && !isEmptyTxtField(txtDefeito) 
+                && !isEmptyTxtField(txtValorTotal)
+                && cbxSituacao.getSelectedIndex() != -1 
+                && tipo != null) {
             String sql = "update tbos set tipo=?, situacao=?, equipamento=?"
                     + ",defeito=?, servico=?, tecnico=?, valor=? where os=?";
             try {
@@ -216,15 +271,21 @@ public class OsScreen extends javax.swing.JInternalFrame {
         }
     }
 
+    /**
+     * Realiza a exclusão de uma OS com base no número da OS
+     */
     private void excluir_os() {
-        int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir esta OS?", "Atenção", JOptionPane.YES_NO_OPTION);
+        int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que "
+                + "deseja excluir esta OS?", "Atenção", 
+                JOptionPane.YES_NO_OPTION);
         if (confirma == JOptionPane.YES_OPTION) {
             try {
                 String sql = "delete from tbos where os=?";
                 pst = conexao.prepareStatement(sql);
                 pst.setString(1, txtNumeroOs.getText());
                 if (pst.executeUpdate() > 0) {
-                    JOptionPane.showMessageDialog(null, "OS Excluída com sucesso");
+                    JOptionPane.showMessageDialog(null, "OS Excluída "
+                            + "com sucesso");
                     limpar_campos();
                 }
             } catch (SQLException e) {
@@ -235,18 +296,20 @@ public class OsScreen extends javax.swing.JInternalFrame {
 
     }
 
+    /**
+     * Realiza a impressão de uma OS com base no número da OS utilizando-se do
+     * framework JasperSoft "iReport"
+     */
     private void imprimir_os(){
-         //imprimindo a OS
-        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressão desta OS?", "Atenção", JOptionPane.YES_NO_OPTION);
+        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a "
+                + "impressão desta OS?", "Atenção", JOptionPane.YES_NO_OPTION);
         if(confirma == JOptionPane.YES_OPTION){
-            //imprimindo OS framework JasperReport
             try {
-                //usando a classe HashMap para criar um filtro
                 HashMap filtro = new HashMap();
                 filtro.put("os",Integer.parseInt(txtNumeroOs.getText()));
-                //Usando a classe JasperPrint para preparar a impressão de um relatório
-                JasperPrint print = JasperFillManager.fillReport("C:\\Users\\marlon\\Documents\\development\\Java\\sistemaos\\reports\\os.jasper",filtro,conexao);
-                //A linha abaixo exibe o relatório através da classe JasperViewer
+                JasperPrint print = JasperFillManager.fillReport("C:\\Users"
+                        + "\\marlon\\Documents\\development\\Java\\sistemaos"
+                        + "\\reports\\os.jasper",filtro,conexao);
                 JasperViewer.viewReport(print, false);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, e);
@@ -439,12 +502,6 @@ public class OsScreen extends javax.swing.JInternalFrame {
 
         lblEquipamento.setText("Equipamento*");
 
-        txtEquipamento.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtEquipamentoActionPerformed(evt);
-            }
-        });
-
         lblDefeito.setText("Defeito*");
 
         lblServico.setText("Serviço");
@@ -594,52 +651,75 @@ public class OsScreen extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtEquipamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtEquipamentoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtEquipamentoActionPerformed
-
+    /**
+     * Chama o método pesquisar_cliente()
+     * @param evt 
+     */
     private void txtPesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPesquisarKeyReleased
-        //Chamando o método pesquisar cliente
         pesquisar_cliente();
     }//GEN-LAST:event_txtPesquisarKeyReleased
 
+    /**
+     * Chama o método setar_campos()
+     * @param evt 
+     */
     private void tblClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblClientesMouseClicked
-        //Chamando o método setar campos
         setar_campos();
     }//GEN-LAST:event_tblClientesMouseClicked
 
+    /**
+     * Chama o método imprimir_os()
+     * @param evt 
+     */
     private void btnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImprimirActionPerformed
-        //Imprime a OS
         imprimir_os();
     }//GEN-LAST:event_btnImprimirActionPerformed
 
+    /**
+     * Seta o campo tipo como "Orçamento" ao clicar no respectivo radiobutton
+     * @param evt 
+     */
     private void rdbOrcamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbOrcamentoActionPerformed
-        // TODO add your handling code here:
         tipo = "Orçamento";
     }//GEN-LAST:event_rdbOrcamentoActionPerformed
 
+    /**
+     * Seta o campo tipo como "OS" ao clicar no respectivo radiobutton
+     * @param evt 
+     */
     private void rdbOrdemServicoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbOrdemServicoActionPerformed
-        // TODO add your handling code here:
         tipo = "OS";
     }//GEN-LAST:event_rdbOrdemServicoActionPerformed
 
+    /**
+     * Chama o método emitir_os()
+     * @param evt 
+     */
     private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed
-        // Chamando o método para emitir uma OS
         emitir_os();
     }//GEN-LAST:event_btnAdicionarActionPerformed
 
+    /**
+     * Chama o método pesquisar_os()
+     * @param evt 
+     */
     private void btnConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarActionPerformed
-        //Chama o método pesquisar_os
         pesquisar_os();
     }//GEN-LAST:event_btnConsultarActionPerformed
 
+    /**
+     * Chama o método alterar_os()
+     * @param evt 
+     */
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        //Chamando o método alterar_os
         alterar_os();
     }//GEN-LAST:event_btnEditarActionPerformed
 
+    /**
+     * Chama o método excluir_os()
+     * @param evt 
+     */
     private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
-        //chama o método excluir_os
         excluir_os();
     }//GEN-LAST:event_btnExcluirActionPerformed
 
