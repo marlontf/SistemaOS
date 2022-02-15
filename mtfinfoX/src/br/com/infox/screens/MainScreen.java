@@ -4,10 +4,15 @@
  */
 package br.com.infox.screens;
 
+import br.com.infox.dal.ConnectionModule;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 import javax.swing.JOptionPane;
+import java.sql.*;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -15,11 +20,13 @@ import javax.swing.JOptionPane;
  */
 public class MainScreen extends javax.swing.JFrame {
 
+    Connection conexao = null;
     /**
      * Creates new form MainScreen
      */
     public MainScreen() {
         initComponents();
+        conexao = ConnectionModule.conector();
     }
 
     /**
@@ -41,6 +48,7 @@ public class MainScreen extends javax.swing.JFrame {
         menCadOS = new javax.swing.JMenuItem();
         menCadUsu = new javax.swing.JMenuItem();
         menRel = new javax.swing.JMenu();
+        menRelCli = new javax.swing.JMenuItem();
         menRelServ = new javax.swing.JMenuItem();
         menAju = new javax.swing.JMenu();
         menAjuSob = new javax.swing.JMenuItem();
@@ -109,6 +117,14 @@ public class MainScreen extends javax.swing.JFrame {
 
         menRel.setText("Relatório");
         menRel.setEnabled(false);
+
+        menRelCli.setText("Clientes");
+        menRelCli.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menRelCliActionPerformed(evt);
+            }
+        });
+        menRel.add(menRelCli);
 
         menRelServ.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_DOWN_MASK));
         menRelServ.setText("Serviços");
@@ -235,6 +251,22 @@ public class MainScreen extends javax.swing.JFrame {
         os.toFront();
     }//GEN-LAST:event_menCadOSActionPerformed
 
+    private void menRelCliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menRelCliActionPerformed
+        //gerando um relatório de clientes
+        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressão deste relatório?", "Atenção", JOptionPane.YES_NO_OPTION);
+        if(confirma == JOptionPane.YES_OPTION){
+            //imprimindo relatório com o framework JasperReport
+            try {
+                //Usando a classe JasperPrint para preparar a impressão de um relatório
+                JasperPrint print = JasperFillManager.fillReport("C:\\Users\\marlon\\Documents\\development\\Java\\sistemaos\\reports\\clientes.jasper",null,conexao);
+                //A linha abaixo exibe o relatório através da classe JasperViewer
+                JasperViewer.viewReport(print, false);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, e);
+            }
+        }
+    }//GEN-LAST:event_menRelCliActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -285,6 +317,7 @@ public class MainScreen extends javax.swing.JFrame {
     private javax.swing.JMenu menOpc;
     private javax.swing.JMenuItem menOpcSai;
     public static javax.swing.JMenu menRel;
+    private javax.swing.JMenuItem menRelCli;
     private javax.swing.JMenuItem menRelServ;
     // End of variables declaration//GEN-END:variables
 }
