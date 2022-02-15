@@ -68,3 +68,10 @@ alter table tbos add tipo varchar(15) not null after data_os;
 alter table tbos add situacao varchar(20) not null after tipo;
 
 CREATE VIEW vw_tbos AS SELECT os, date_format(data_os, "%d/%m/%Y - %h:%i") data_os, tipo, situacao, equipamento, defeito, servico, tecnico, valor, idcli FROM tbos;
+
+-- create view for services report
+CREATE VIEW vw_servicos AS SELECT
+	os.os OS,data_os Data,tipo Tipo,situacao Situação,equipamento Equipamento,valor Valor,
+    cli.nomecli Cliente,fonecli Telefone
+FROM tbos os
+INNER JOIN tbclientes AS cli ON (cli.idcli = os.idcli);
