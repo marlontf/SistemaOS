@@ -66,3 +66,5 @@ update tbusuarios set perfil="user" where iduser = 1;
 -- a linha abaixo altera a tabela adicinando um campo em uma determinada posição
 alter table tbos add tipo varchar(15) not null after data_os;
 alter table tbos add situacao varchar(20) not null after tipo;
+
+CREATE VIEW vw_tbos AS SELECT os, date_format(data_os, "%d/%m/%Y - %h:%i") data_os, tipo, situacao, equipamento, defeito, servico, tecnico, valor, idcli FROM tbos;
