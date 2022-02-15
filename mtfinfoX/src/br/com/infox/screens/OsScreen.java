@@ -22,29 +22,37 @@ public class OsScreen extends javax.swing.JInternalFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
-    
+
     //a linha abaixo cria uma variável para armazenar o texto de acordo com o
     //radiobutton selecionado
     private String tipo = null;
-    
+
     public OsScreen() {
         initComponents();
         conexao = ConnectionModule.conector();
     }
-    
-    public boolean isEmptyTxtField(JTextField textField){
-        if(textField.getText().isBlank()){
+
+    public boolean isEmptyTxtField(JTextField textField) {
+        if (textField.getText().isBlank()) {
             textField.requestFocus();
             return true;
-        }else{
+        } else {
             return false;
         }
     }
-    
-    public void limpar_campos(){
-        tblClientes.setModel(new DefaultTableModel());
+
+    public void limpar_campos() {
+        //desabilitar botões
+        btnEditar.setEnabled(false);
+        btnExcluir.setEnabled(false);
+        btnImprimir.setEnabled(false);
+        //habilitar botões
         btnAdicionar.setEnabled(true);
         txtPesquisar.setEnabled(true);
+        //limpar campos
+        tblClientes.setModel(new DefaultTableModel());
+        txtPesquisar.setText(null);
+        txtId.setText(null);
         tblClientes.setVisible(true);
         txtNumeroOs.setText(null);
         txtData.setText(null);
@@ -55,46 +63,44 @@ public class OsScreen extends javax.swing.JInternalFrame {
         txtDefeito.setText(null);
         txtServico.setText(null);
         txtTecnico.setText(null);
-        txtValorTotal.setText(null);
+        txtValorTotal.setText("0.00");
     }
-    
-    private void pesquisar_cliente(){
-        if(!txtPesquisar.getText().isBlank()){
+
+    private void pesquisar_cliente() {
+        if (!txtPesquisar.getText().isBlank()) {
             String sql = "Select idcli Id, nomecli Nome, fonecli Fone from "
                     + "tbclientes where nomecli like ? order by nomecli "
                     + "limit 20";
             try {
                 pst = conexao.prepareStatement(sql);
-                pst.setString(1, txtPesquisar.getText()+"%");
+                pst.setString(1, txtPesquisar.getText() + "%");
                 rs = pst.executeQuery();
                 tblClientes.setModel(DbUtils.resultSetToTableModel(rs));
+                tblClientes.setDefaultEditor(Object.class, null);
+                tblClientes.getTableHeader().setReorderingAllowed(false);
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(this, e);
             }
-        }else{
-            limpar_campos();
         }
     }
-    
-    private void setar_campos(){
-        if(!txtPesquisar.getText().isBlank()){
-            int setar = tblClientes.getSelectedRow();
-            txtId.setText(tblClientes.getModel().getValueAt(setar, 0)
+
+    private void setar_campos() {
+        int setar = tblClientes.getSelectedRow();
+        txtId.setText(tblClientes.getModel().getValueAt(setar, 0)
                 .toString());
-        }
     }
-    
+
     //método para cadastrar uma OS
-    private void emitir_os(){
-        if(!isEmptyTxtField(txtId) && !isEmptyTxtField(txtEquipamento) 
+    private void emitir_os() {
+        if (!isEmptyTxtField(txtId) && !isEmptyTxtField(txtEquipamento)
                 && !isEmptyTxtField(txtDefeito) && !isEmptyTxtField(txtValorTotal)
-                && cbxSituacao.getSelectedIndex() != -1 && tipo != null){
-            
+                && cbxSituacao.getSelectedIndex() != -1 && tipo != null) {
+
             String sql = "insert into tbos (tipo, situacao, equipamento, "
                     + "defeito, servico, tecnico, valor, idcli) "
                     + "values(?,?,?,?,?,?,?,?)";
             try {
-                pst=conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                pst = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 pst.setString(1, tipo);
                 pst.setString(2, cbxSituacao.getSelectedItem().toString());
                 pst.setString(3, txtEquipamento.getText());
@@ -103,70 +109,80 @@ public class OsScreen extends javax.swing.JInternalFrame {
                 pst.setString(6, txtTecnico.getText());
                 pst.setString(7, txtValorTotal.getText().replace(",", "."));
                 pst.setInt(8, Integer.parseInt(txtId.getText()));
-                if(pst.executeUpdate() >0){
+                if (pst.executeUpdate() > 0) {
                     ResultSet rs2 = pst.getGeneratedKeys();
-                    if(rs2.next()){
+                    if (rs2.next()) {
                         String os = rs2.getString(1);
-                        JOptionPane.showMessageDialog(null, "<html>OS nº: <b style='color:red'>"+os+"</b> emitida com sucesso</html>");
-                    limpar_campos();
+                        txtNumeroOs.setText(os);
+                        JOptionPane.showMessageDialog(null, "<html>OS nº: <b style='color:red'>" + os + "</b> emitida com sucesso</html>");
+                        btnAdicionar.setEnabled(false);
+                        btnEditar.setEnabled(true);
+                        btnExcluir.setEnabled(true);
+                        btnImprimir.setEnabled(true);
+                        tblClientes.setVisible(false);
                     }
                 }
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(this, e);
             }
-        }else{
+        } else {
             JOptionPane.showMessageDialog(null, "Preencha todos os campos requeridos");
         }
-            
+
     }
 
-    private void pesquisar_os(){
+    private void pesquisar_os() {
         //a linha abaixo cria uma caixa de entrada do tipo JOption Pane
         String num_os = JOptionPane.showInputDialog("Número da OS");
-        String sql = "select * from tbos where os = "+num_os;
-        
-        try {
-            pst=conexao.prepareStatement(sql);
-            rs = pst.executeQuery();
-            if(rs.next()){
-                txtNumeroOs.setText(rs.getString("os"));
-                txtData.setText(rs.getString("data_os"));
-                //setando os radio buttons
-                String rdbTipo = rs.getString("tipo");
-                if(rdbTipo.equals("OS")){
-                    rdbOrdemServico.setSelected(true);
-                    tipo = "OS";
-                }else if(rdbTipo.equals("Orçamento")){
-                    rdbOrcamento.setSelected(true);
-                    tipo = "Orçamento";
+        String sql = "select * from tbos where os = " + num_os;
+        if (num_os != null) {
+            try {
+                pst = conexao.prepareStatement(sql);
+                rs = pst.executeQuery();
+                if (rs.next()) {
+                    txtNumeroOs.setText(rs.getString("os"));
+                    txtData.setText(rs.getString("data_os"));
+                    //setando os radio buttons
+                    String rdbTipo = rs.getString("tipo");
+                    if (rdbTipo.equals("OS")) {
+                        rdbOrdemServico.setSelected(true);
+                        tipo = "OS";
+                    } else if (rdbTipo.equals("Orçamento")) {
+                        rdbOrcamento.setSelected(true);
+                        tipo = "Orçamento";
+                    }
+                    cbxSituacao.setSelectedItem(rs.getString("situacao"));
+                    txtEquipamento.setText(rs.getString("equipamento"));
+                    txtDefeito.setText(rs.getString("defeito"));
+                    txtServico.setText(rs.getString("servico"));
+                    txtTecnico.setText(rs.getString("tecnico"));
+                    txtValorTotal.setText(rs.getString("valor"));
+                    txtId.setText(rs.getString("idcli"));
+                    //evitando problemas
+                    btnAdicionar.setEnabled(false);
+                    tblClientes.setVisible(false);
+                    btnEditar.setEnabled(true);
+                    btnExcluir.setEnabled(true);
+                    btnImprimir.setEnabled(true);
+                    txtPesquisar.setEnabled(false);
+                } else {
+                    JOptionPane.showMessageDialog(null, "OS não cadastrada");
                 }
-                cbxSituacao.setSelectedItem(rs.getString("situacao"));
-                txtEquipamento.setText(rs.getString("equipamento"));
-                txtDefeito.setText(rs.getString("defeito"));
-                txtServico.setText(rs.getString("servico"));
-                txtTecnico.setText(rs.getString("tecnico"));
-                txtValorTotal.setText(rs.getString("valor"));
-                txtId.setText(rs.getString("idcli"));
-                //evitando problemas
-                btnAdicionar.setEnabled(false);
-                txtPesquisar.setEnabled(false);
-                tblClientes.setVisible(false);
-            }else{
-                JOptionPane.showMessageDialog(null, "OS não cadastrada");
+            } catch (java.sql.SQLSyntaxErrorException e) {
+                JOptionPane.showMessageDialog(null, "OS Inválida");
+            } catch (SQLException e2) {
+                JOptionPane.showMessageDialog(null, e2);
             }
-        } catch (java.sql.SQLSyntaxErrorException e) {
-            JOptionPane.showMessageDialog(null, "OS Inválida");
-        } catch (SQLException e2){
-            JOptionPane.showMessageDialog(null, e2);
         }
+
     }
-    
-    private void alterar_os(){
-        if(!isEmptyTxtField(txtId) && !isEmptyTxtField(txtEquipamento) 
+
+    private void alterar_os() {
+        if (!isEmptyTxtField(txtId) && !isEmptyTxtField(txtEquipamento)
                 && !isEmptyTxtField(txtDefeito) && !isEmptyTxtField(txtValorTotal)
-                && cbxSituacao.getSelectedIndex() != -1 && tipo != null){
+                && cbxSituacao.getSelectedIndex() != -1 && tipo != null) {
             String sql = "update tbos set tipo=?, situacao=?, equipamento=?"
-                + ",defeito=?, servico=?, tecnico=?, valor=? where os=?";
+                    + ",defeito=?, servico=?, tecnico=?, valor=? where os=?";
             try {
                 pst = conexao.prepareStatement(sql);
                 pst.setString(1, tipo);
@@ -177,7 +193,7 @@ public class OsScreen extends javax.swing.JInternalFrame {
                 pst.setString(6, txtTecnico.getText());
                 pst.setString(7, txtValorTotal.getText());
                 pst.setString(8, txtNumeroOs.getText());
-                if(pst.executeUpdate() > 0){
+                if (pst.executeUpdate() > 0) {
                     JOptionPane.showMessageDialog(null, "Os alterada com "
                             + "sucesso");
                     limpar_campos();
@@ -185,32 +201,31 @@ public class OsScreen extends javax.swing.JInternalFrame {
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(this, e);
             }
-        }else{
+        } else {
             JOptionPane.showMessageDialog(null, "Preencha todos os campos "
                     + "obrigatórios");
         }
     }
-    
-    private void excluir_os(){
-        int confirma = JOptionPane.showConfirmDialog(null,"Tem certeza que deseja excluir esta OS?","Atenção", JOptionPane.YES_NO_OPTION);
-        if(confirma == JOptionPane.YES_OPTION){
+
+    private void excluir_os() {
+        int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir esta OS?", "Atenção", JOptionPane.YES_NO_OPTION);
+        if (confirma == JOptionPane.YES_OPTION) {
             try {
                 String sql = "delete from tbos where os=?";
                 pst = conexao.prepareStatement(sql);
                 pst.setString(1, txtNumeroOs.getText());
-                if (pst.executeUpdate() > 0){
+                if (pst.executeUpdate() > 0) {
                     JOptionPane.showMessageDialog(null, "OS Excluída com sucesso");
                     limpar_campos();
                 }
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(this, e);
             }
-            
-            
+
         }
-        
+
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -354,6 +369,7 @@ public class OsScreen extends javax.swing.JInternalFrame {
                 "Title 1"
             }
         ));
+        tblClientes.setFocusable(false);
         tblClientes.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tblClientesMouseClicked(evt);
@@ -432,6 +448,7 @@ public class OsScreen extends javax.swing.JInternalFrame {
         btnEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/update.png"))); // NOI18N
         btnEditar.setToolTipText("Alterar");
         btnEditar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnEditar.setEnabled(false);
         btnEditar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEditarActionPerformed(evt);
@@ -441,6 +458,7 @@ public class OsScreen extends javax.swing.JInternalFrame {
         btnExcluir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/delete.png"))); // NOI18N
         btnExcluir.setToolTipText("Remover");
         btnExcluir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnExcluir.setEnabled(false);
         btnExcluir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnExcluirActionPerformed(evt);
@@ -450,6 +468,7 @@ public class OsScreen extends javax.swing.JInternalFrame {
         btnImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/images/print.png"))); // NOI18N
         btnImprimir.setToolTipText("Imprimir");
         btnImprimir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnImprimir.setEnabled(false);
         btnImprimir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnImprimirActionPerformed(evt);
