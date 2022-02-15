@@ -134,7 +134,7 @@ public class OsScreen extends javax.swing.JInternalFrame {
     private void pesquisar_os() {
         //a linha abaixo cria uma caixa de entrada do tipo JOption Pane
         String num_os = JOptionPane.showInputDialog("Número da OS");
-        String sql = "select * from tbos where os = " + num_os;
+        String sql = "select * from vw_tbos where os = " + num_os;
         if (num_os != null) {
             try {
                 pst = conexao.prepareStatement(sql);
