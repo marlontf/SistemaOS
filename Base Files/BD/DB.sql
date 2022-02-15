@@ -75,3 +75,10 @@ CREATE VIEW vw_servicos AS SELECT
     cli.nomecli Cliente,fonecli Telefone
 FROM tbos os
 INNER JOIN tbclientes AS cli ON (cli.idcli = os.idcli);
+
+-- create view for os print
+CREATE VIEW vw_os AS SELECT
+	os.os OS,data_os Data,tipo Tipo,situacao Situação,equipamento Equipamento,defeito Defeito,servico Serviço,tecnico Técnico,valor Valor,os.idcli ID,
+    cli.nomecli Cliente,endcli Endereço,fonecli Telefone,emailcli Email
+FROM tbos os
+INNER JOIN tbclientes cli ON (cli.idcli = os.idcli);
