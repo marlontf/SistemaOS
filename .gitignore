@@ -78,7 +78,8 @@ local.properties
 nbproject/private/
 build/
 nbbuild/
-dist/
+dist/lib/
+!dist/javadoc/
 nbdist/
 nbactions.xml
 nb-configuration.xml
@@ -96,3 +97,4 @@ nb-configuration.xml
 .DS_Store
 /mtfinfoX/nbproject/private/
 /OnlyForTests/nbproject/private/
+mtfinfoX/dist/README.TXT
