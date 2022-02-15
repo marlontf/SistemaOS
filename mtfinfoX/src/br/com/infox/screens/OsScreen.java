@@ -115,13 +115,13 @@ public class OsScreen extends javax.swing.JInternalFrame {
                     ResultSet rs2 = pst.getGeneratedKeys();
                     if (rs2.next()) {
                         String os = rs2.getString(1);
-                        txtNumeroOs.setText(os);
                         JOptionPane.showMessageDialog(null, "<html>OS nº: <b style='color:red'>" + os + "</b> emitida com sucesso</html>");
                         btnAdicionar.setEnabled(false);
                         btnEditar.setEnabled(true);
                         btnExcluir.setEnabled(true);
                         btnImprimir.setEnabled(true);
                         tblClientes.setVisible(false);
+                        pesquisar_os(os);
                     }
                 }
             } catch (SQLException e) {
@@ -132,10 +132,16 @@ public class OsScreen extends javax.swing.JInternalFrame {
         }
 
     }
-
-    private void pesquisar_os() {
-        //a linha abaixo cria uma caixa de entrada do tipo JOption Pane
-        String num_os = JOptionPane.showInputDialog("Número da OS");
+    
+    private void pesquisar_os(String ...os) {
+        String num_os = null;
+        //verifica se a OS foi passada por parâmetro
+        if(os.length >0){
+            num_os = os[0];
+        }else{
+            //a linha abaixo cria uma caixa de entrada do tipo JOption Pane
+            num_os = JOptionPane.showInputDialog("Número da OS");
+        } 
         String sql = "select * from vw_tbos where os = " + num_os;
         if (num_os != null) {
             try {
