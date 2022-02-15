@@ -18,9 +18,9 @@ public class ConnectionModule {
         //A linha abaixo chama o driver importado
         String driver = "org.mariadb.jdbc.Driver";
         //Armazenando informações referentes ao banco
-        String url = "jdbc:mariadb://localhost:3306/dbinfox";
-        String user = "root";
-        String password = "123456";
+        String url = "jdbc:mariadb://localhost:3306/dbinfox?characterEncoding=utf-8";
+        String user = "dba";
+        String password = "Infox@123456";
         //Estabelecendo conexão com o banco
         try {
             Class.forName(driver);
